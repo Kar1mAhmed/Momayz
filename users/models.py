@@ -38,7 +38,7 @@ class User(AbstractBaseUser):
     gender =models.CharField(max_length=20, choices=GENDER_CHOICES)
     govern = models.CharField(max_length=50)
     credits = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
-    img = models.SmallIntegerField()
+    img = models.SmallIntegerField(default=1)
     
     notification_token = models.CharField(max_length=255)
     with_facebook = models.BooleanField(default=False, blank=True)
