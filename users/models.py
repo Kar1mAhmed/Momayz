@@ -3,9 +3,9 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
 
 class MyUserManager(BaseUserManager):
-    def create_user(self, email, password=None):
+    def create_user(self, phone, password=None):
         user = self.model(
-            email=self.normalize_email(email),
+            phone=phone,
         )
 
         user.set_password(password)
@@ -13,9 +13,9 @@ class MyUserManager(BaseUserManager):
         return user
 
 
-    def create_superuser(self,email, password):
+    def create_superuser(self,phone, password):
         user = self.create_user(
-            email=self.normalize_email(email),
+            phone==phone,
             password=password,
         )
 
@@ -32,7 +32,7 @@ GENDER_CHOICES = [
         ]
 
 class User(AbstractBaseUser):
-    email= models.EmailField(max_length=255, unique=True, primary_key=True)
+    email= models.EmailField(max_length=255, unique=True, blank=True, null=True)
     name = models.CharField(max_length=255)
     phone = models.CharField(max_length=20, unique=True)
     gender =models.CharField(max_length=20, choices=GENDER_CHOICES)
@@ -51,7 +51,7 @@ class User(AbstractBaseUser):
     is_active = models.BooleanField(default=True)
 
 
-    USERNAME_FIELD = 'email' 
+    USERNAME_FIELD = 'phone' 
 
     REQUIRED_FIELDS = []
 

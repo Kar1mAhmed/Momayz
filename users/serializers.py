@@ -20,13 +20,13 @@ class UserRegisterSerializer(UserDetailsSerializer):
     
     def save(self, request):  # Change the method signature here
         user = User(
-            email=self.validated_data['email'],
+            phone=self.validated_data['phone'],
             name=self.validated_data['name'],
-            phone = self.validated_data['phone'],
-            notification_token = self.validated_data['notification_token'],            
+            gender = self.validated_data['gender'],
+            notification_token = self.validated_data['notification_token'], 
+            govern = self.validated_data['govern']           
         )
-        optional_fields = ['longitude', 'latitude', 'id_image',
-                            'id_image_held', 'id_verified', 'with_facebook', 'with_google','buyer']
+        optional_fields = ['with_facebook', 'with_google', 'email']
     
         for field in optional_fields:
             if field in self.validated_data:

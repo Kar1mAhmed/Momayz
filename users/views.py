@@ -1,3 +1,14 @@
-from django.shortcuts import render
+from rest_framework.generics import RetrieveUpdateDestroyAPIView
+from rest_framework.permissions import IsAuthenticated
 
-# Create your views here.
+
+from .models import User
+from .serializers import *
+
+
+
+
+class UserDetails(RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = User.objects.all()
+    serializer_class = UserRegisterSerializer
