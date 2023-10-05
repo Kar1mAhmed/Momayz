@@ -4,12 +4,15 @@ from rest_framework.decorators import api_view
 from datetime import datetime, timedelta
 import random
 from .models import *
+import re
+
 
 
 # Will be in app settings model
 OTP_LIMIT_FOR_NUMBER = 20 
 OTP_LIMIT_FOR_NUMBER_PER_DAY = 10
 OTP_LIMIT_FOR_NUMBER_PER_HOUR = 5
+OTP_EXPIRATION = 15
 
 
 def check_spam(phone):
@@ -39,6 +42,10 @@ def generate_otp(request):
     phone_number = request.GET.get("phone_number")
     spam, message = check_spam(phone_number)
     
+    
+    if not is_egyptian_number(phone_number):
+        return Response({"detail": "Wrong phone number."}, status=status.HTTP_400_BAD_REQUEST)
+    
     if spam:
         return Response({"detail": message}, status=status.HTTP_403_FORBIDDEN)
     else:
@@ -53,7 +60,7 @@ def generate_otp(request):
 def verify_otp(request):
     phone_number = request.GET.get("phone_number")
     otp_code = request.GET.get("code")
-    
+        
     otps = OTP.objects.filter(phone=phone_number)
     last_otp = otps.last()
     if not last_otp:
@@ -61,7 +68,7 @@ def verify_otp(request):
     
     if last_otp.code == otp_code:
         time_difference = datetime.now() - last_otp.created_at
-        if time_difference < timedelta(minutes=15):
+        if time_difference < timedelta(minutes=OTP_EXPIRATION):
             return({'detail': "OTP expired."}, status.HTTP_400_BAD_REQUEST)
         else:
             otps.delete()
@@ -69,4 +76,15 @@ def verify_otp(request):
     else:
         return Response({'detail': "Wrong OTP."})
     
+    
+    
+def is_egyptian_number(phone_number):
+    # Define a regular expression pattern to match Egyptian numbers
+    pattern = r'^(011|010|012|015)\d{8}$'
+
+    # Use re.match to check if the number matches the pattern
+    if re.match(pattern, phone_number):
+        return True
+    else:
+        return False    
 
