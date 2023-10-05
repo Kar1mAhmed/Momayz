@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     
     'users',
     'locations',
+    'otp',
 ]
 SITE_ID = 1
 
