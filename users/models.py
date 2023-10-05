@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-
+from locations.models import City
 
 class MyUserManager(BaseUserManager):
     def create_user(self, phone, password=None):
@@ -15,12 +15,11 @@ class MyUserManager(BaseUserManager):
 
     def create_superuser(self,phone, password):
         user = self.create_user(
-            phone==phone,
+            phone=phone,
             password=password,
         )
 
         user.is_staff = True
-        user.is_admin = True
         user.is_superuser = True
         user.save(using=self._db)
         return user
@@ -34,9 +33,9 @@ GENDER_CHOICES = [
 class User(AbstractBaseUser):
     email= models.EmailField(max_length=255, unique=True, blank=True, null=True)
     name = models.CharField(max_length=255)
-    phone = models.CharField(max_length=20, unique=True)
+    username = models.CharField(max_length=11, unique=True)
     gender =models.CharField(max_length=20, choices=GENDER_CHOICES)
-    govern = models.CharField(max_length=50)
+    city = models.ForeignKey(City, on_delete=models.PROTECT, null=True, blank=True)
     credits = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     img = models.SmallIntegerField(default=1)
     
@@ -51,14 +50,14 @@ class User(AbstractBaseUser):
     is_active = models.BooleanField(default=True)
 
 
-    USERNAME_FIELD = 'phone' 
+    USERNAME_FIELD = 'username' 
 
     REQUIRED_FIELDS = []
 
     objects = MyUserManager()
 
     def __str__(self):
-        return  self.email
+        return  self.username
 
     def has_perm(self, perm, obj=None):
         return self.is_superuser

@@ -1,5 +1,5 @@
 from pathlib import Path
-
+import datetime
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -30,14 +30,18 @@ INSTALLED_APPS = [
     
     'rest_framework',
     'rest_framework.authtoken',
-    'rest_framework_simplejwt',
-
     'dj_rest_auth',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'dj_rest_auth.registration',
 
     
     'users',
     'locations',
 ]
+SITE_ID = 1
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -121,3 +125,35 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+ACCOUNT_AUTHENTICATION_METHOD = 'username'
+
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ]
+}
+SIMPLE_JWT  = {
+    'USER_ID_FIELD': 'username',
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=30),
+    'ROTATE_REFRESH_TOKENS': True,
+}
+
+REST_AUTH = {
+        'USER_DETAILS_SERIALIZER' : 'users.serializers.CustomUserDetailsSerializer',
+        'REGISTER_SERIALIZER': 'users.serializers.UserRegisterSerializer',
+        
+        'USE_JWT': True,
+        'JWT_AUTH_COOKIE': 'my-app-auth',
+        'JWT_AUTH_REFRESH_COOKIE': 'my-refresh-token',
+        'JWT_AUTH_HTTPONLY':False,
+}
+
+AUTHENTICATION_BACKENDS = [
+    'allauth.account.auth_backends.AuthenticationBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]       
