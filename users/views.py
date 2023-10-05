@@ -6,8 +6,6 @@ from .models import User
 from .serializers import *
 
 
-
-
 class UserDetails(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
     queryset = User.objects.all()
