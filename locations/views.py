@@ -11,7 +11,6 @@ from .models import City, Govern
 
 
 class GovernView(APIView):
-    permission_classes = [IsAuthenticated]
     def get(self, request, *args, **kwargs):
         governs = Govern.objects.all()
         serialized_data = GovernSerializer(governs, many=True)
@@ -21,7 +20,6 @@ class GovernView(APIView):
 
 
 class CityView(APIView):
-    permission_classes = [IsAuthenticated]
     def get(self, request, *args, **kwargs):
         requested_govern = request.GET.get('govern_id')
         if requested_govern is None:
