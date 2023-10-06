@@ -11,4 +11,4 @@ class GovernSerializer(serializers.ModelSerializer):
 class CitySerializer(serializers.ModelSerializer):
     class Meta:
         model = City
-        fields = ['name']
+        fields = '__all__'
