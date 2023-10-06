@@ -8,7 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 ALLOWED_HOSTS = ['*']
 CSRF_TRUSTED_ORIGINS = ['http://*', 'https://*']
-CSRF_TRUSTED_ORIGINS = ['http://*', 'https://*', 'https://*.moffed.up.railway.app/']
+CSRF_TRUSTED_ORIGINS = ['http://*', 'https://*', 'https://*.momyez.up.railway.app/']
 
 CORS_ALLOW_ALL_ORIGINS = True
 
