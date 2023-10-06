@@ -8,6 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-1rcgs+lmoj0ox!#g^5rf9--aw)i&7%i#wtf+nvt&pa(96i9f)&'
+TIME_ZONE = 'Africa/Cairo'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

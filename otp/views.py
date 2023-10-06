@@ -1,38 +1,40 @@
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
-from datetime import datetime, timedelta
+import datetime
 import random
 from .models import *
 import re
-
+from django.utils import timezone
+from datetime import timedelta
 
 
 # Will be in app settings model
 OTP_LIMIT_FOR_NUMBER = 20 
 OTP_LIMIT_FOR_NUMBER_PER_DAY = 10
 OTP_LIMIT_FOR_NUMBER_PER_HOUR = 5
-OTP_EXPIRATION = 15
+OTP_EXPIRATION_SECONDS = 15
 
 
-def check_spam(phone):
-    otps_of_number = OTP.objects.filter(phone=phone)
-    now = datetime.now()
-
-    if otps_of_number.count() > OTP_LIMIT_FOR_NUMBER:
+def check_spam(phone_number):
+    
+    otps_of_number = OTP.objects.filter(phone_number=phone_number)
+    now = datetime.datetime.now()
+    
+    if otps_of_number.count() >= OTP_LIMIT_FOR_NUMBER:
         return True, "Phone number exceeded all OTPS limit."
-    elif otps_of_number.filter(created_at__date=now.date()).count() > OTP_LIMIT_FOR_NUMBER_PER_DAY:
+    if otps_of_number.filter(created_at__date=now.date()).count() >= OTP_LIMIT_FOR_NUMBER_PER_DAY:
         return True, "Phone number exceeded today OTPS limit, try agin tomorrow. "
-    elif otps_of_number.filter(created_at__date=now.time()).count() > OTP_LIMIT_FOR_NUMBER_PER_HOUR:
+    if otps_of_number.filter(created_at__hour=now.hour, created_at__date = now.date()).count() >= OTP_LIMIT_FOR_NUMBER_PER_HOUR:
         return True, "Phone number exceeded This Hour OTPS limit, try agin after one hour."
     else:
-        False
+        return False, None
     
 def send_otp(phone):
     otp_code = ''.join([str(random.randint(0, 9)) for _ in range(6)])
     otp_code = '555555' # should be removed
     #send_otp_to_number(otp, phone)
-    otp = OTP.objects.create(code=otp_code, phone=phone)
+    otp = OTP.objects.create(code=otp_code, phone_number=phone)
     otp.save()
     return True
 
@@ -40,12 +42,13 @@ def send_otp(phone):
 @api_view(['POST'])
 def generate_otp(request):
     phone_number = request.GET.get("phone_number")
-    spam, message = check_spam(phone_number)
     
     
     if not is_egyptian_number(phone_number):
         return Response({"detail": "Wrong phone number."}, status=status.HTTP_400_BAD_REQUEST)
     
+    spam, message = check_spam(phone_number)
+
     if spam:
         return Response({"detail": message}, status=status.HTTP_403_FORBIDDEN)
     else:
@@ -61,15 +64,20 @@ def verify_otp(request):
     phone_number = request.GET.get("phone_number")
     otp_code = request.GET.get("code")
         
-    otps = OTP.objects.filter(phone=phone_number)
+    otps = OTP.objects.filter(phone_number =phone_number)
     last_otp = otps.last()
     if not last_otp:
         return Response({'detail': "No OTP found for this phone number."}, status=status.HTTP_400_BAD_REQUEST)
     
+    
     if last_otp.code == otp_code:
-        time_difference = datetime.now() - last_otp.created_at
-        if time_difference < timedelta(minutes=OTP_EXPIRATION):
-            return({'detail': "OTP expired."}, status.HTTP_400_BAD_REQUEST)
+        current_time = timezone.now()
+        time_difference = current_time - last_otp.created_at
+        time_difference_in_minutes = time_difference / timedelta(minutes=1)
+
+        # Check if the OTP was created less than 15 minutes ago
+        if time_difference_in_minutes >= OTP_EXPIRATION_SECONDS:  #
+            return Response({'detail': "OTP expired."}, status.HTTP_400_BAD_REQUEST)
         else:
             otps.delete()
             return Response({'detail': "Verified."}, status=status.HTTP_200_OK)
