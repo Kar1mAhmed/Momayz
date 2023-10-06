@@ -41,7 +41,7 @@ def send_otp(phone):
 
 @api_view(['POST'])
 def generate_otp(request):
-    phone_number = request.GET.get("phone_number")
+    phone_number = request.data['phone_number']
     
     
     if not is_egyptian_number(phone_number):
@@ -61,8 +61,8 @@ def generate_otp(request):
 
 @api_view(['POST'])
 def verify_otp(request):
-    phone_number = request.GET.get("phone_number")
-    otp_code = request.GET.get("code")
+    phone_number = request.data["phone_number"]
+    otp_code = request.data["code"]
         
     last_otp = OTP.objects.filter(phone_number=phone_number).order_by('-created_at').first()
 

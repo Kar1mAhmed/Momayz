@@ -3,9 +3,9 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from locations.models import City
 
 class MyUserManager(BaseUserManager):
-    def create_user(self, phone, password=None):
+    def create_user(self, username, password=None):
         user = self.model(
-            phone=phone,
+            username=username,
         )
 
         user.set_password(password)
@@ -13,9 +13,9 @@ class MyUserManager(BaseUserManager):
         return user
 
 
-    def create_superuser(self,phone, password):
+    def create_superuser(self,username, password):
         user = self.create_user(
-            phone=phone,
+            username=username,
             password=password,
         )
 
@@ -40,8 +40,6 @@ class User(AbstractBaseUser):
     img = models.SmallIntegerField(default=1)
     
     notification_token = models.CharField(max_length=255)
-    with_facebook = models.BooleanField(default=False, blank=True)
-    with_google = models.BooleanField(default=False, blank=True)
     
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
