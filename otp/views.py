@@ -64,27 +64,33 @@ def verify_otp(request):
     phone_number = request.GET.get("phone_number")
     otp_code = request.GET.get("code")
         
-    otps = OTP.objects.filter(phone_number =phone_number)
-    last_otp = otps.last()
+    last_otp = OTP.objects.filter(phone_number=phone_number).order_by('-created_at').first()
+
     if not last_otp:
         return Response({'detail': "No OTP found for this phone number."}, status=status.HTTP_400_BAD_REQUEST)
     
-    
     if last_otp.code == otp_code:
-        current_time = timezone.now()
-        time_difference = current_time - last_otp.created_at
-        time_difference_in_minutes = time_difference / timedelta(minutes=1)
-
-        # Check if the OTP was created less than 15 minutes ago
-        if time_difference_in_minutes >= OTP_EXPIRATION_SECONDS:  #
+        expired= otp_expired(last_otp)
+        if expired:  
             return Response({'detail': "OTP expired."}, status.HTTP_400_BAD_REQUEST)
         else:
-            otps.delete()
+            otps_to_delete = OTP.objects.filter(phone_number=phone_number).exclude(id=last_otp.id)
+            otps_to_delete.delete()
             return Response({'detail': "Verified."}, status=status.HTTP_200_OK)
     else:
         return Response({'detail': "Wrong OTP."})
     
     
+def otp_expired(otp):
+    current_time = timezone.now()
+    time_difference = current_time - otp.created_at
+    time_difference_in_minutes = time_difference / timedelta(minutes=1)
+    if time_difference_in_minutes >= OTP_EXPIRATION_SECONDS:  
+        return True # expired
+    else:
+        return False
+    
+
     
 def is_egyptian_number(phone_number):
     # Define a regular expression pattern to match Egyptian numbers
