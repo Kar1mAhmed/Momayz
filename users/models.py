@@ -37,7 +37,7 @@ class User(AbstractBaseUser):
     gender =models.CharField(max_length=20, choices=GENDER_CHOICES)
     city = models.ForeignKey(Area, on_delete=models.PROTECT, null=True, blank=True)
     credits = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
-    img = models.SmallIntegerField(default=1)
+    img = models.CharField(max_length=100)
     
     notification_token = models.CharField(max_length=255)
     
