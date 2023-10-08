@@ -23,7 +23,7 @@ class UserDetails(RetrieveUpdateDestroyAPIView):
 @api_view(['POST'])
 def reset_password(request):
     phone_number = request.data['username']
-    pass1= request.data['password1']
+    pass1= request.data['password']
     pass2= request.data['password2']
     otp= request.data['otp']
     
