@@ -1,7 +1,7 @@
 from django.urls import path
-from .views import CityView, GovernView
+from .views import AreaView, GovernView
 
 urlpatterns = [
     path('govern/', GovernView.as_view()),
-    path('city/', CityView.as_view()),
+    path('city/', AreaView.as_view()),
 ]

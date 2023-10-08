@@ -17,9 +17,9 @@ class Govern(models.Model):
             )
         super().delete(*args, **kwargs)
 
-class City(models.Model):
+class Area(models.Model):
     name = models.CharField(max_length=30, unique=True)
     govern = models.ForeignKey(Govern, on_delete=models.CASCADE)
-
+    city = models.BooleanField(default=True) 
     def __str__(self):
         return self.name

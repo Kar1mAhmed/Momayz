@@ -1,10 +1,10 @@
 from django.db import models
-from locations.models import City
+from locations.models import Area
 from flightsInfo.models import Appointments, Bus
 
 class FlightDetails(models.Model):
-    move_from = models.ForeignKey(City, on_delete=models.PROTECT, related_name="move_from")
-    move_to = models.ForeignKey(City, on_delete=models.PROTECT, related_name="move_to")
+    move_from = models.ForeignKey(Area, on_delete=models.PROTECT, related_name="move_from")
+    move_to = models.ForeignKey(Area, on_delete=models.PROTECT, related_name="move_to")
     move_at = models.ForeignKey(Appointments, on_delete=models.PROTECT)
     bus = models.ForeignKey(Bus, on_delete=models.PROTECT)
     duration = models.DurationField()

@@ -1,10 +1,10 @@
 from django.contrib import admin
-from .models import Govern, City
+from .models import Govern, Area
 # Register your models here.
 admin.site.register(Govern)
 
 
-class CityAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in City._meta.fields]
+class AreaAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in Area._meta.fields]
     
-admin.site.register(City, CityAdmin)
+admin.site.register(Area, AreaAdmin)

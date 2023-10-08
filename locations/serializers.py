@@ -1,4 +1,4 @@
-from .models import Govern, City
+from .models import Govern, Area
 from rest_framework import serializers
 
 
@@ -8,7 +8,7 @@ class GovernSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class CitySerializer(serializers.ModelSerializer):
+class AreaSerializer(serializers.ModelSerializer):
     class Meta:
-        model = City
+        model = Area
         fields = '__all__'

@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-from locations.models import City
+from locations.models import Area
 
 class MyUserManager(BaseUserManager):
     def create_user(self, username, password=None):
@@ -35,7 +35,7 @@ class User(AbstractBaseUser):
     name = models.CharField(max_length=255)
     username = models.CharField(max_length=11, unique=True)
     gender =models.CharField(max_length=20, choices=GENDER_CHOICES)
-    city = models.ForeignKey(City, on_delete=models.PROTECT, null=True, blank=True)
+    city = models.ForeignKey(Area, on_delete=models.PROTECT, null=True, blank=True)
     credits = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     img = models.SmallIntegerField(default=1)
     

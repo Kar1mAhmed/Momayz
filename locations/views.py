@@ -1,11 +1,10 @@
 
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 
-from .serializers import CitySerializer, GovernSerializer
-from .models import City, Govern
+from .serializers import AreaSerializer, GovernSerializer
+from .models import Area, Govern
 
 
 
@@ -19,13 +18,13 @@ class GovernView(APIView):
 
 
 
-class CityView(APIView):
+class AreaView(APIView):
     def get(self, request, *args, **kwargs):
         requested_govern = request.GET.get('govern_id')
         if requested_govern is None:
             requested_govern = 1
-        cites = City.objects.filter(govern=requested_govern)
-        serialized_data = CitySerializer(cites, many=True)
+        cites = Area.objects.filter(govern=requested_govern)
+        serialized_data = AreaSerializer(cites, many=True)
         return Response(serialized_data.data, status=status.HTTP_200_OK)
     
     
