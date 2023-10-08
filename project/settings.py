@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     'locations',
     'otp',
     'QA',
+    'flights',
+    'flightsInfo',
 ]
 SITE_ID = 1
 
