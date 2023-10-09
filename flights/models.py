@@ -35,12 +35,12 @@ class FlightManager(models.Manager):
 class Flight(models.Model):
     details = models.ForeignKey(Program, on_delete=models.PROTECT)
     date = models.DateField()
-    time = models.TimeField(blank=True)
-    available_seats = models.SmallIntegerField(blank=True)
-    seats_count = models.SmallIntegerField(blank=True)
+    time = models.TimeField(blank=True, null=True)
+    available_seats = models.SmallIntegerField(blank=True, null=True)
+    seats_count = models.SmallIntegerField(blank=True, null=True)
     cancelled = models.BooleanField(default=False)
     
     objects = FlightManager()
     
     def __str__(self) -> str:
-        return f"{self.details.move_from} to {self.details.move_to} ({self.date}|{self.de})"
+        return f"{self.details.move_from} to {self.details.move_to} ({self.date}|{self.time})"
