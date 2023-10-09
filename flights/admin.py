@@ -6,7 +6,7 @@ class FlightAdmin(admin.ModelAdmin):
     list_display = [field.name for field in Flight._meta.fields]
     
 class ProgramDetailsAdmin(admin.ModelAdmin):
-    list_display = ['move_from', 'move_to', 'bus', 'Duration', 'move_at']
+    list_display = ['move_from', 'move_to', 'bus', 'duration', 'move_at']
     
     def get_move_at(self, obj):
         return ", ".join([appointment.time.strftime('%I:%M %p') for appointment in obj.move_at.all()])
