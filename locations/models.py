@@ -21,5 +21,10 @@ class Area(models.Model):
     name = models.CharField(max_length=30, unique=True)
     govern = models.ForeignKey(Govern, on_delete=models.CASCADE)
     city = models.BooleanField(default=True) 
+    
+    
+    class Meta:
+        unique_together = ['name', 'govern']
+        
     def __str__(self):
         return self.name
