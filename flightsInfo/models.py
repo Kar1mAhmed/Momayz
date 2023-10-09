@@ -12,4 +12,7 @@ class Bus(models.Model):
 
 class Appointments(models.Model):
     time = models.TimeField()
+    
+    class Meta:
+        ordering = ['time']
 
