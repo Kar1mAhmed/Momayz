@@ -9,7 +9,7 @@ class ProgramDetailsAdmin(admin.ModelAdmin):
     list_display = ['move_from', 'move_to', 'bus', 'Duration', 'move_at']
     
     def get_move_at(self, obj):
-        return ", ".join([str(appointment) for appointment in obj.move_at.all()])
+        return ", ".join([appointment.time.strftime('%I:%M %p') for appointment in obj.move_at.all()])
     get_move_at.short_description = 'Move At'
     
 
