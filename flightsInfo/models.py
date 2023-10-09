@@ -17,5 +17,6 @@ class Appointments(models.Model):
     class Meta:
         ordering = ['time']
 
-    def __str__(self) -> str:
-        return self.time
+    def __str__(self):
+        # Format the time as a string
+        return self.time.strftime('%I:%M %p')  # This formats the time as 12-hour with AM/PM
