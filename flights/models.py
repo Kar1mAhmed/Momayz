@@ -13,23 +13,6 @@ class Program(models.Model):
         return f"{self.move_from} to {self.move_to}"
 
 
-class FlightManager(models.Manager):
-    def create(self, **kwargs):
-        # Check if seats_count and available_seats are not provided, and if so, set them based on related models
-        if 'seats_count' not in kwargs:
-            kwargs['seats_count'] = kwargs['details'].bus.seats_count
-        
-        if 'available_seats' not in kwargs:
-            kwargs['available_seats'] = kwargs['details'].bus.seats_count
-            
-        if 'time' not in kwargs:
-            kwargs['time'] = kwargs['details'].time.first()
-
-
-        # Create a new Flight instance
-        flight = self.model(**kwargs)
-        flight.save(using=self._db)
-        return flight
 
 
 class Flight(models.Model):
@@ -40,7 +23,18 @@ class Flight(models.Model):
     seats_count = models.SmallIntegerField(blank=True, null=True)
     cancelled = models.BooleanField(default=False)
     
-    objects = FlightManager()
     
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            if not self.time :
+                self.time = self.details.move_at.first()
+            if not self.available_seats:
+                self.available_seats = self.details.bus.seats
+            if not self.seats_count:
+                self.seats_count = self.details.bus.seats
+        
+        super(Flight, self).save(*args, **kwargs)
+
+        
     def __str__(self) -> str:
         return f"{self.details.move_from} to {self.details.move_to} ({self.date}|{self.time})"
