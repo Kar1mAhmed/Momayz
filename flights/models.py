@@ -8,6 +8,9 @@ class Program(models.Model):
     move_at = models.ManyToManyField(Appointments)
     bus = models.ForeignKey(Bus, on_delete=models.PROTECT)
     duration = models.CharField(max_length=8)
+    
+    def __str__(self) -> str:
+        return f"{self.move_from} to {self.move_to}"
 
 
 class FlightManager(models.Manager):
@@ -20,7 +23,7 @@ class FlightManager(models.Manager):
             kwargs['available_seats'] = kwargs['details'].bus.seats_count
             
         if 'time' not in kwargs:
-            kwargs['time'] = kwargs['details'].time
+            kwargs['time'] = kwargs['details'].time.first()
 
 
         # Create a new Flight instance
