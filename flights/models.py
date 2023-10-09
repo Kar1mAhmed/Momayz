@@ -2,7 +2,7 @@ from django.db import models
 from locations.models import Area
 from flightsInfo.models import Appointments, Bus
 
-class FlightDetails(models.Model):
+class Program(models.Model):
     move_from = models.ForeignKey(Area, on_delete=models.PROTECT, related_name="move_from")
     move_to = models.ForeignKey(Area, on_delete=models.PROTECT, related_name="move_to")
     move_at = models.ManyToManyField(Appointments)
@@ -24,7 +24,7 @@ class FlightManager(models.Manager):
 
 
 class Flight(models.Model):
-    details = models.ForeignKey(FlightDetails, on_delete=models.PROTECT)
+    details = models.ForeignKey(Program, on_delete=models.PROTECT)
     date = models.DateField()
     available_seats = models.SmallIntegerField()
     seats_count = models.SmallIntegerField()
