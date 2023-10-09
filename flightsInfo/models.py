@@ -16,3 +16,5 @@ class Appointments(models.Model):
     class Meta:
         ordering = ['time']
 
+    def __str__(self) -> str:
+        return self.time
