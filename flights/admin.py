@@ -7,6 +7,11 @@ class FlightAdmin(admin.ModelAdmin):
     
 class ProgramDetailsAdmin(admin.ModelAdmin):
     list_display = [field.name for field in Program._meta.fields]
+    list_display.append("move_at")
+    
+    def get_move_at(self, obj):
+        return ", ".join([str(appointment) for appointment in obj.move_at.all()])
+    get_move_at.short_description = 'Move At'
     
 
 
