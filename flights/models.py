@@ -7,7 +7,7 @@ class FlightDetails(models.Model):
     move_to = models.ForeignKey(Area, on_delete=models.PROTECT, related_name="move_to")
     move_at = models.ForeignKey(Appointments, on_delete=models.PROTECT)
     bus = models.ForeignKey(Bus, on_delete=models.PROTECT)
-    duration = models.DurationField()
+    duration = models.CharField(max_length=8)
 
 
 class FlightManager(models.Manager):
