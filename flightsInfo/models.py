@@ -7,7 +7,8 @@ class Bus(models.Model):
     name = models.CharField(max_length=30)
     seats = models.SmallIntegerField()
     
-    
+    def __str__(self) -> str:
+        return f"{self.name}({self.seats})"
 
 
 class Appointments(models.Model):
