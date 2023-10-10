@@ -18,16 +18,16 @@ class Program(models.Model):
 class Flight(models.Model):
     details = models.ForeignKey(Program, on_delete=models.PROTECT)
     date = models.DateField()
-    time = models.TimeField(blank=True, null=True)
-    available_seats = models.SmallIntegerField(blank=True, null=True)
-    seats_count = models.SmallIntegerField(blank=True, null=True)
+    time = models.TimeField()
+    available_seats = models.SmallIntegerField()
+    seats_count = models.SmallIntegerField()
     cancelled = models.BooleanField(default=False)
     
     
     def save(self, *args, **kwargs):
         if not self.pk:
             if not self.time :
-                self.time = self.details.move_at.first()
+                self.time = self.time = self.details.move_at.first().time
             if not self.available_seats:
                 self.available_seats = self.details.bus.seats
             if not self.seats_count:
