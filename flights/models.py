@@ -1,8 +1,9 @@
 from django.db import models
-from locations.models import Area
+from locations.models import Area, Govern
 from flightsInfo.models import Appointments, Bus
 
 class Program(models.Model):
+    govern = models.ForeignKey(Govern, on_delete=models.PROTECT, default=1)
     move_from = models.ForeignKey(Area, on_delete=models.PROTECT, related_name="move_from")
     move_to = models.ForeignKey(Area, on_delete=models.PROTECT, related_name="move_to")
     move_at = models.ManyToManyField(Appointments)

@@ -1,7 +1,11 @@
 from django.contrib import admin
 from .models import Govern, Area
 # Register your models here.
-admin.site.register(Govern)
+
+class GovernAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in Govern._meta.fields]
+
+admin.site.register(Govern, GovernAdmin)
 
 
 class AreaAdmin(admin.ModelAdmin):
