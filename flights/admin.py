@@ -13,7 +13,9 @@ class FlightAdmin(admin.ModelAdmin):
     def get_search_results(self, request, queryset, search_term):
         lookup = (
             Q(details__move_from__name__icontains=search_term) |
-            Q(details__move_to__name__icontains=search_term) 
+            Q(details__move_to__name__icontains=search_term) |
+            Q(date__icontains=search_term) |
+            Q(time__icontains=search_term) 
             )
         
         queryset, use_distinct = super().get_search_results(request, queryset, search_term)
