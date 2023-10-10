@@ -18,9 +18,9 @@ class Program(models.Model):
 class Flight(models.Model):
     details = models.ForeignKey(Program, on_delete=models.PROTECT)
     date = models.DateField()
-    time = models.TimeField()
-    available_seats = models.SmallIntegerField()
-    seats_count = models.SmallIntegerField()
+    time = models.TimeField(default="00:00:00")
+    available_seats = models.SmallIntegerField(default=0)
+    seats_count = models.SmallIntegerField(default=0)
     cancelled = models.BooleanField(default=False)
     
     
