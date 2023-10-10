@@ -26,7 +26,7 @@ class Flight(models.Model):
     
     def save(self, *args, **kwargs):
         if not self.pk:
-            if not self.time :
+            if str(self.time) == '00:00:00':
                 self.time = self.details.move_at.first().time
             if not self.available_seats:
                 self.available_seats = self.details.bus.seats
