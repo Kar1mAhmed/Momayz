@@ -1,12 +1,34 @@
 from django.contrib import admin
 from .models import Flight, Program
+from django.db.models import Q
 
 
 class FlightAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in Flight._meta.fields]
+    list_display = ['move_from', 'move_to', 'date', 'time', 'available_seats', 'seats_count', 'cancelled']
+    list_filter = ["details__move_from", "details__move_to",  "time", "cancelled"]
+    search_fields = ["details__move_from", "details__move_to", "date", "time", "cancelled"] 
+    
+    
+    
+    def get_search_results(self, request, queryset, search_term):
+        # Define the lookup for related models (assuming "name" is the field you want to search)
+        lookup = (
+            Q(details__move_from__name__icontains=search_term) |
+            Q(details__move_to__name__icontains=search_term) 
+            )
+        
+        queryset, use_distinct = super().get_search_results(request, queryset, search_term)
+        return queryset.filter(lookup), use_distinct
+    
+    def move_from(self, obj):
+        return obj.details.move_from
+    
+    def move_to(self, obj):
+        return obj.details.move_to
+    
     
 class ProgramDetailsAdmin(admin.ModelAdmin):
-    list_display = ['move_from', 'move_to', 'bus', 'duration', 'get_move_at']
+    list_display = ['id', 'move_from', 'move_to', 'bus', 'duration', 'get_move_at']
     
     def get_move_at(self, obj):
         appointments = obj.move_at.all()

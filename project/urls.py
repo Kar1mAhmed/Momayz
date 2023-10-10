@@ -6,5 +6,6 @@ urlpatterns = [
     path('users/', include('users.urls')),
     path('locations/', include('locations.urls')),
     path('otp/', include('otp.urls')),
-    path('QA/', include('QA.urls'))
+    path('QA/', include('QA.urls')),
+    path('flights/', include('flights.urls')),
 ]
