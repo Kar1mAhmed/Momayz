@@ -13,7 +13,9 @@ def create_flight(program, date):
 
 @api_view(['POST'])
 def add_flight(request):
-    flight_id = request.GET.get('pk')
+    flight_id = request.data['pk']
+    date = request.data['date']
+    
     program = Program.objects.get(pk=flight_id)
-    create_flight(program=program, date='2023-10-20')
+    create_flight(program=program, date=date)
     return Response({"detail": "flight Created"}, status=status.HTTP_200_OK)

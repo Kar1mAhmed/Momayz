@@ -11,7 +11,6 @@ class FlightAdmin(admin.ModelAdmin):
     
     
     def get_search_results(self, request, queryset, search_term):
-        # Define the lookup for related models (assuming "name" is the field you want to search)
         lookup = (
             Q(details__move_from__name__icontains=search_term) |
             Q(details__move_to__name__icontains=search_term) 
