@@ -11,7 +11,7 @@ class Program(models.Model):
     duration = models.CharField(max_length=8)
     
     def __str__(self) -> str:
-        return f"{self.move_from} to {self.move_to}"
+        return f"{self.move_from} إلي {self.move_to}"
 
 
 
@@ -38,4 +38,4 @@ class Flight(models.Model):
 
         
     def __str__(self) -> str:
-        return f"{self.details.move_from} to {self.details.move_to} ({self.date}|{self.time})"
+        return f"{self.details.move_from} إلي {self.details.move_to} ({self.date} | {self.time})"

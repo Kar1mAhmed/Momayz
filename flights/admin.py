@@ -4,6 +4,7 @@ from django.db.models import Q
 
 
 class FlightAdmin(admin.ModelAdmin):
+    readonly_fields = ['details', 'available_seats']
     list_display = ['move_from', 'move_to', 'date', 'time', 'available_seats', 'seats_count', 'cancelled']
     list_filter = ["details__move_from", "details__move_to",  "time", "cancelled"]
     search_fields = ["details__move_from__name", "details__move_to__name", "date", "time", "cancelled"] 
