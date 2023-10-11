@@ -26,8 +26,8 @@ class Flight(models.Model):
     details = models.ForeignKey(Program, on_delete=models.PROTECT)
     date = models.DateField()
     time = models.TimeField(default="00:00:00")
-    available_seats = models.SmallIntegerField(default=0, validators=[MinValueValidator(0)])
-    seats_count = models.SmallIntegerField(default=0, validators=[MinValueValidator(0)])
+    taken_seats = models.SmallIntegerField(default=0, validators=[MinValueValidator(0)])
+    total_seats = models.SmallIntegerField(default=0, validators=[MinValueValidator(0)])
     cancelled = models.BooleanField(default=False)
     price = models.SmallIntegerField(validators=[MinValueValidator(0)], default=25)
     
@@ -35,15 +35,14 @@ class Flight(models.Model):
         if not self.pk:
             if str(self.time) == '00:00:00':
                 self.time = self.details.move_at.first().time
-            if not self.available_seats:
-                self.available_seats = self.details.bus.seats
-            if not self.seats_count:
-                self.seats_count = self.details.bus.seats
+            if not self.total_seats:
+                self.total_seats = self.details.bus.seats
             if not self.price:
                 self.price = self.details.price
             
             
         super(Flight, self).save(*args, **kwargs)
+
 
         
     def __str__(self) -> str:

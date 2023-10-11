@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from django.db import models
 
 from django.db.models import Q
 
@@ -27,7 +28,7 @@ def today_flights(request):
     flights = Flight.objects.filter(
     Q(details__move_from=city) | Q(details__move_to=city), 
     cancelled=False,
-    available_seats__gt=0,
+    taken_seats__lt=models.F('total_seats'),
     date=current_date,
     time__gt=current_time
     )

@@ -7,7 +7,7 @@ class FlightSerializer(serializers.ModelSerializer):
     duration = serializers.CharField(source='details.duration')
     class Meta:
         model = Flight
-        fields = ['id', 'date', 'time', 'available_seats', 'seats_count',
+        fields = ['id', 'date', 'time', 'taken_seats', 'total_seats',
                     'move_from', 'move_to', 'duration', 'price']
 
 
