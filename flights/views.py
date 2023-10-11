@@ -51,7 +51,7 @@ def tomorrow_flights(request):
     flights = Flight.objects.filter(
     Q(details__move_from=city) | Q(details__move_to=city), 
     cancelled=False,
-    available_seats__gt=0,
+    taken_seats__lt=models.F('total_seats'),
     date=current_date,
     )
 
