@@ -25,6 +25,7 @@ def today_flights(request):
     current_date = date.today()
     current_time = timezone.now().time()
     
+    
     flights = Flight.objects.filter(
     Q(details__move_from=city) | Q(details__move_to=city), 
     cancelled=False,
