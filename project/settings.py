@@ -15,9 +15,11 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-1rcgs+lmoj0ox!#g^5rf9--aw)i&7%i#wtf+nvt&pa(96i9f)&'
-TIME_ZONE = 'Africa/Cairo'
 
-# SECURITY WARNING: don't run with debug turned on in production!
+
+TIME_ZONE = 'Africa/Cairo'
+#USE_TZ = True
+
 DEBUG = True
 
 
@@ -128,11 +130,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
-
 USE_I18N = True
 
-USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
