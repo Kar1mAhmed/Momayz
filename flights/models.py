@@ -40,8 +40,13 @@ class Flight(models.Model):
             if not self.price:
                 self.price = self.details.price
             
-            
         super(Flight, self).save(*args, **kwargs)
+    
+    def reserve(self):
+        if self.taken_seats < self.total_seats:
+            self.taken_seats += 1
+            return self.taken_seats
+        return False
 
 
         

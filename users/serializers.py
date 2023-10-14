@@ -18,7 +18,7 @@ class UserRegisterSerializer(UserDetailsSerializer):
             }
         }
     
-    def save(self, request):  # Change the method signature here
+    def save(self, request):  
         user = User(
             username=self.validated_data['username'],
             name=self.validated_data['name'],

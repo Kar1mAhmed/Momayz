@@ -8,4 +8,5 @@ urlpatterns = [
     path('otp/', include('otp.urls')),
     path('QA/', include('QA.urls')),
     path('flights/', include('flights.urls')),
+    path('reservation/', include('reservations.urls'))
 ]
