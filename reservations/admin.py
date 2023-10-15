@@ -4,10 +4,11 @@ from .models import Reservation
 
 class ReservationAdmin(admin.ModelAdmin):
     #readonly_fields = []
-    list_display = ['user_name', 'user_username', 'flight_move_from', 'flight_move_to', 'flight_date', 'flight_time']
+    list_display = ['user_name', 'user_username', 'flight_move_from',
+                    'flight_move_to', 'flight_date', 'flight_time']
 
     def user_name(self, obj):
-        return obj.user.name
+        return obj.user.user_name
     user_name.short_description = 'User Name'
 
     def user_phone(self, obj):
