@@ -8,7 +8,7 @@ class ReservationAdmin(admin.ModelAdmin):
                     'flight_move_to', 'flight_date', 'flight_time']
 
     def user_name(self, obj):
-        return obj.user.user_name
+        return obj.user.username
     user_name.short_description = 'User Name'
 
     def user_phone(self, obj):
