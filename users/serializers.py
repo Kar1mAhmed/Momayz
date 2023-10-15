@@ -26,7 +26,7 @@ class UserRegisterSerializer(UserDetailsSerializer):
             notification_token = self.validated_data['notification_token'], 
             city = self.validated_data['city']           
         )
-        optional_fields = ['with_facebook', 'with_google', 'email']
+        optional_fields = ['with_facebook', 'with_google', 'email', 'img']
     
         for field in optional_fields:
             if field in self.validated_data:
