@@ -5,7 +5,10 @@ class UserAdmin(admin.ModelAdmin):
     list_display = ['username', 'name', 'city', 'govern', 'credits']
     
     def govern(self, obj):
-        return obj.city.govern
+        if obj.city:
+            return obj.city.govern
+        return None
+    
 
 
 admin.site.register(User, UserAdmin)
