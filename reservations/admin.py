@@ -16,11 +16,11 @@ class ReservationAdmin(admin.ModelAdmin):
     user_username.short_description = 'User Phone'
 
     def flight_move_from(self, obj):
-        return obj.flight.move_from
+        return obj.flight.details.move_from
     flight_move_from.short_description = 'Move From'
 
     def flight_move_to(self, obj):
-        return obj.flight.move_to
+        return obj.flight.details.move_to
     flight_move_to.short_description = 'Move To'
 
     def flight_date(self, obj):
