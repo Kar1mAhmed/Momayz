@@ -42,6 +42,8 @@ class Reservation(models.Model):
             ).update(taken_seats=F('taken_seats') - 1)
 
             if updated_seats == 1:
+                self.user.credits += self.flight.price
+                self.user.save(update_fields=['credits'])
                 return super().delete(*args, **kwargs)
             else:
                 raise Exception("No seats to decrement.")
