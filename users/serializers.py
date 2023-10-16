@@ -46,4 +46,4 @@ class CustomUserDetailsSerializer(UserDetailsSerializer):
     city_name =  serializers.CharField(source='city.name')
     class Meta:
         model = User
-        exclude = ['is_superuser', 'is_staff', 'last_login', 'date_joined', 'is_active', 'password', 'city']
+        exclude = ['is_superuser', 'is_staff', 'last_login', 'date_joined', 'is_active', 'password']

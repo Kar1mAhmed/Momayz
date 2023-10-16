@@ -2,11 +2,16 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
 import datetime
-import random
-from .models import *
-import re
 from django.utils import timezone
 from datetime import timedelta
+
+from django.core.exceptions import ObjectDoesNotExist
+import re
+
+import random
+from .models import *
+from users.models import User
+
 
 
 # Will be in app settings model
@@ -43,6 +48,9 @@ def send_otp(phone):
 def generate_otp(request):
     phone_number = request.data['phone_number']
     
+    
+    if check_phone_exist(phone_number):
+        return Response({'detail': 'الرقم مستخدم بالفعل.'}, status=status.HTTP_409_CONFLICT)
     
     if not is_egyptian_number(phone_number):
         return Response({"detail": "Wrong phone number."}, status=status.HTTP_400_BAD_REQUEST)
@@ -88,6 +96,15 @@ def otp_expired(otp):
     if time_difference_in_minutes >= OTP_EXPIRATION_SECONDS:  
         return True # expired
     else:
+        return False
+    
+def check_phone_exist(phone_number):
+    try:
+        user = User.objects.get(username=phone_number)
+        # User with the specified phone number exists
+        return True
+    except ObjectDoesNotExist:
+        # User with the specified phone number does not exist
         return False
     
 
