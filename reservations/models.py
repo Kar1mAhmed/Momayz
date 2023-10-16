@@ -18,20 +18,21 @@ class Reservation(models.Model):
     def save(self, *args, **kwargs):
         if not self.pk:
             with transaction.atomic():
+                if self.user.credits < self.flight.price:
+                    raise Exception('no enough credits')
+                
                 if self.flight.taken_seats < self.flight.total_seats:
                     updated_seats = Flight.objects.filter(pk=self.flight.pk, taken_seats__lt=F('total_seats')).update(taken_seats=F('taken_seats') + 1)
                     
                     if updated_seats == 1:
-                        if self.user.credits > self.flight.price:
-                            self.user.credits -= self.flight.price
-                            self.user.save(update_fields=['credits'])
-                            return super().save(*args, **kwargs)
-                        else:
-                            return None # no available credits
+                        self.user.credits -= self.flight.price
+                        self.user.save(update_fields=['credits'])
+                        return super().save(*args, **kwargs)
                     else:
-                        return None # no available seats
+                        raise Exception("seats not enough.")
                 else:   
-                    return None # no available seats 
+                    raise Exception("seats not enough.")
+
         
     
     def delete(self, *args, **kwargs):
@@ -43,5 +44,4 @@ class Reservation(models.Model):
             if updated_seats == 1:
                 return super().delete(*args, **kwargs)
             else:
-                # If the seats were not updated, handle the error accordingly
                 raise Exception("No seats to decrement.")
