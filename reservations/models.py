@@ -22,16 +22,26 @@ class Reservation(models.Model):
                     updated_seats = Flight.objects.filter(pk=self.flight.pk, taken_seats__lt=F('total_seats')).update(taken_seats=F('taken_seats') + 1)
                     
                     if updated_seats == 1:
-                        self.user.credits -= self.flight.price
-                        self.user.save(update_fields=['credits'])
-                        return super().save(*args, **kwargs)
+                        if self.user.credits > self.flight.price:
+                            self.user.credits -= self.flight.price
+                            self.user.save(update_fields=['credits'])
+                            return super().save(*args, **kwargs)
+                        else:
+                            return None # no available credits
                     else:
-                        return None
+                        return None # no available seats
                 else:   
-                    return None
+                    return None # no available seats 
         
     
     def delete(self, *args, **kwargs):
-        self.flight.taken_seats = F('taken_seats') - 1
-        self.flight.save(update_fields=['taken_seats'])
-        return super().delete(*args, **kwargs)
+        with transaction.atomic():
+            updated_seats = Flight.objects.filter(
+                pk=self.flight.pk, taken_seats__gt=0
+            ).update(taken_seats=F('taken_seats') - 1)
+
+            if updated_seats == 1:
+                return super().delete(*args, **kwargs)
+            else:
+                # If the seats were not updated, handle the error accordingly
+                raise Exception("No seats to decrement.")
