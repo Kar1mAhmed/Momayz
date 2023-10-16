@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import one_flight
+from .views import reserve_one_flight
 
 urlpatterns = [
-    path('one-flight/', one_flight),
+    path('one-flight/', reserve_one_flight),
 ]

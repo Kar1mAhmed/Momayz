@@ -2,6 +2,9 @@ from django.db import models
 from django.db.models import F
 from users.models import User
 from flights.models import Flight
+from django.db import transaction
+
+
 
 
 class Reservation(models.Model):
@@ -10,9 +13,26 @@ class Reservation(models.Model):
     reserved_at = models.DateTimeField(auto_now_add=True)
     seat_number = models.SmallIntegerField()
 
+
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            with transaction.atomic():
+                if self.flight.taken_seats < self.flight.total_seats:
+                    updated_seats = Flight.objects.filter(pk=self.flight.pk, taken_seats__lt=F('total_seats')).update(taken_seats=F('taken_seats') + 1)
+                    
+                    if updated_seats == 1:
+                        self.user.credits -= self.flight.price
+                        self.user.save(update_fields=['credits'])
+                        return self.create(user=self.user, flight=self.flight)
+                    else:
+                        return None
+                else:   
+                    return None
+        
+        return super().save(*args, **kwargs)
     
     def delete(self, *args, **kwargs):
-        # Decrement the taken_seats count using F() expressions and update()
         self.flight.taken_seats = F('taken_seats') - 1
         self.flight.save(update_fields=['taken_seats'])
         return super().delete(*args, **kwargs)
