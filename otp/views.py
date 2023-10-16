@@ -110,10 +110,8 @@ def check_phone_exist(phone_number):
 
     
 def is_egyptian_number(phone_number):
-    # Define a regular expression pattern to match Egyptian numbers
     pattern = r'^(011|010|012|015)\d{8}$'
 
-    # Use re.match to check if the number matches the pattern
     if re.match(pattern, phone_number):
         return True
     else:
