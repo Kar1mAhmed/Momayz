@@ -24,13 +24,12 @@ class Reservation(models.Model):
                     if updated_seats == 1:
                         self.user.credits -= self.flight.price
                         self.user.save(update_fields=['credits'])
-                        return self.create(user=self.user, flight=self.flight)
+                        return super().save(*args, **kwargs)
                     else:
                         return None
                 else:   
                     return None
         
-        return super().save(*args, **kwargs)
     
     def delete(self, *args, **kwargs):
         self.flight.taken_seats = F('taken_seats') - 1
