@@ -10,3 +10,17 @@ class BusAdmin(admin.ModelAdmin):
 
 admin.site.register(Bus, BusAdmin)
 admin.site.register(Appointments, AppointmentsAdmin)
+
+
+
+########## UN REGISTER SOME USELESS MODELS FOR ADMIN ######################
+from django.contrib.sites.models import Site
+admin.site.unregister(Site)
+
+from allauth.socialaccount.models import SocialApp, SocialAccount, SocialToken
+
+admin.site.unregister(SocialApp)
+admin.site.unregister(SocialAccount)
+admin.site.unregister(SocialToken)
+
+
