@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from .models import Reservation
 from flights.models import Flight
-
+from .serializers import ReservationSerializer
 
 
 
@@ -24,11 +24,16 @@ def reserve_one_flight(request):
     if flight.price > user.credits:
         return Response({'detail' : 'لا يتوفر رصيد كافي لحجز الرحلة.'}, status=status.HTTP_400_BAD_REQUEST)
     
-
-    reservation = Reservation.objects.create(user=user, flight=flight)
+    try:
+        reservation = Reservation.objects.create(user=user, flight=flight)
+    except ValueError as e:
+        return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     # Check if the reservation was created successfully
     if reservation is not None:
-        return Response({'detail': 'تم حجز الرحلة بنجاح.'}, status=status.HTTP_201_CREATED)
+        serialized_data = ReservationSerializer(reservation)
+        return Response({'detail': 'تم حجز الرحلة بنجاح.',
+                        'reservation_info' : serialized_data.data},
+                        status=status.HTTP_201_CREATED)
     else:
         return Response({'detail': 'حدث خطأ أثناء الحجز.'}, status=status.HTTP_400_BAD_REQUEST)

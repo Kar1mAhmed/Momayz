@@ -7,8 +7,29 @@ class ReservationAdmin(admin.ModelAdmin):
     list_display = ['user_name', 'user_username', 'flight_move_from',
                     'flight_move_to', 'flight_date', 'flight_time']
 
+
+    actions = ['immediate_delete']
+
+    def immediate_delete(self, request, queryset):
+        for item in queryset:
+            item.delete()
+        self.message_user(
+            request,
+            f"items deleted.",
+        )
+
+    immediate_delete.short_description = "Delete selected items "
+    
+    
+    def get_actions(self, request):
+        # Override the get_actions method to exclude the delete action
+        actions = super().get_actions(request)
+        del actions['delete_selected']
+        return actions
+    
     def user_name(self, obj):
         return obj.user.name
+    
     user_name.short_description = 'User Name'
 
     def user_username(self, obj):
