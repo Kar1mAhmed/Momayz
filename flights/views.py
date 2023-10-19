@@ -23,16 +23,15 @@ def today_flights(request):
     city = user.city
     
     current_date = date.today()
-    current_time = timezone.now().time()
-    print("DEBUG " * 20)
-    print(current_time)
+    #current_time = timezone.now().time()
+    
     
     flights = Flight.objects.filter(
     Q(details__move_from=city) | Q(details__move_to=city), 
     cancelled=False,
     taken_seats__lt=models.F('total_seats'),
-    date=current_date,
-    time__gt=current_time
+    date=current_date
+    #time__gt=current_time
     )
 
     data_serialized = FlightSerializer(flights, many=True)
