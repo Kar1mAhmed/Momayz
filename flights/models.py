@@ -23,7 +23,7 @@ class Program(models.Model):
 
 
 class Flight(models.Model):
-    details = models.ForeignKey(Program, on_delete=models.PROTECT)
+    program = models.ForeignKey(Program, on_delete=models.PROTECT)
     date = models.DateField()
     time = models.TimeField(default="00:00:00")
     taken_seats = models.SmallIntegerField(default=0, validators=[MinValueValidator(0)])
@@ -34,11 +34,11 @@ class Flight(models.Model):
     def save(self, *args, **kwargs):
         if not self.pk:
             if str(self.time) == '00:00:00':
-                self.time = self.details.move_at.first().time
+                self.time = self.program.move_at.first().time
             if not self.total_seats:
-                self.total_seats = self.details.bus.seats
+                self.total_seats = self.program.bus.seats
             if not self.price:
-                self.price = self.details.price
+                self.price = self.program.price
             
         super(Flight, self).save(*args, **kwargs)
 
@@ -48,4 +48,4 @@ class Flight(models.Model):
 
         
     def __str__(self) -> str:
-        return f"{self.details.move_from} إلي {self.details.move_to} ({self.date} | {self.time})"
+        return f"{self.program.move_from} إلي {self.program.move_to} ({self.date} | {self.time})"

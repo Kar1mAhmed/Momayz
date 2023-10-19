@@ -27,7 +27,7 @@ def today_flights(request):
     
     
     flights = Flight.objects.filter(
-    Q(details__move_from=city) | Q(details__move_to=city), 
+    Q(program__move_from=city) | Q(program__move_to=city), 
     cancelled=False,
     taken_seats__lt=models.F('total_seats'),
     date=current_date
@@ -49,7 +49,7 @@ def tomorrow_flights(request):
     current_date = date.today() + timedelta(days=1)
 
     flights = Flight.objects.filter(
-    Q(details__move_from=city) | Q(details__move_to=city), 
+    Q(program__move_from=city) | Q(program__move_to=city), 
     cancelled=False,
     taken_seats__lt=models.F('total_seats'),
     date=current_date,
@@ -63,7 +63,7 @@ def tomorrow_flights(request):
 
 def create_flight(program, date):
     for appointment in program.move_at.all():
-        new_flight = Flight.objects.create(details=program, date=date, time=appointment.time)
+        new_flight = Flight.objects.create(program=program, date=date, time=appointment.time)
         new_flight.save()
 
 

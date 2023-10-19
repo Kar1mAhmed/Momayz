@@ -13,7 +13,8 @@ class Reservation(models.Model):
     reserved_at = models.DateTimeField(auto_now_add=True)
     seat_number = models.SmallIntegerField()
 
-
+    class Meta:
+        ordering = ['flight__date', 'flight__time']
 
     def save(self, *args, **kwargs):
         if not self.pk:
@@ -27,7 +28,7 @@ class Reservation(models.Model):
                     if updated_seats == 1:
                         self.user.credits -= self.flight.price
                         self.user.save(update_fields=['credits'])
-                        self.seat_number = self.flight.taken_seats
+                        self.seat_number = self.flight.taken_seats + 1
                         return super().save(*args, **kwargs)
                     else:
                         raise ValueError("seats not enough.")

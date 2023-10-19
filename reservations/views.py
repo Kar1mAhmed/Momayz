@@ -37,3 +37,12 @@ def reserve_one_flight(request):
                         status=status.HTTP_201_CREATED)
     else:
         return Response({'detail': 'حدث خطأ أثناء الحجز.'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_my_reservation(request):
+    user = request.user
+    my_flights = Reservation.objects.filter(user=user)
+    serialized_data = ReservationSerializer(my_flights, many=True)
+    return Response(serialized_data.data, status=status.HTTP_200_OK)
