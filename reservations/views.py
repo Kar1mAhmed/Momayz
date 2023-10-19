@@ -8,6 +8,17 @@ from .models import Reservation
 from flights.models import Flight
 from .serializers import ReservationSerializer
 
+from django.utils import timezone
+import pytz
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_my_reservation(request):
+    user = request.user
+    my_flights = Reservation.objects.filter(user=user)
+    serialized_data = ReservationSerializer(my_flights, many=True)
+    return Response(serialized_data.data, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
@@ -39,10 +50,18 @@ def reserve_one_flight(request):
         return Response({'detail': 'حدث خطأ أثناء الحجز.'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def get_my_reservation(request):
+def edit_reservation(request):
     user = request.user
-    my_flights = Reservation.objects.filter(user=user)
-    serialized_data = ReservationSerializer(my_flights, many=True)
-    return Response(serialized_data.data, status=status.HTTP_200_OK)
+    reservation_id = request.data['reservation_id']
+    reservation = Reservation.objects.get(pk=reservation_id, user=user)
+    
+    #check if the Flight is today
+    cairo_timezone = pytz.timezone('Africa/Cairo')
+    current_date_in_cairo = timezone.now().astimezone(cairo_timezone).date()
+    if reservation.flight.date == current_date_in_cairo:
+        return Response({'detail': 'لا يمكن تعديل الرحلة, موعد الأنطلاق اليوم.'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    
+    return Response({'detail': "A7oooo"})
