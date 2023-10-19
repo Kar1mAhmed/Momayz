@@ -43,6 +43,9 @@ class Flight(models.Model):
         super(Flight, self).save(*args, **kwargs)
 
 
+    class Meta:
+        ordering = ['date', 'time']
+
         
     def __str__(self) -> str:
         return f"{self.details.move_from} إلي {self.details.move_to} ({self.date} | {self.time})"

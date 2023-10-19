@@ -23,8 +23,9 @@ def today_flights(request):
     city = user.city
     
     current_date = date.today()
-    current_time = timezone.now().time()
-    
+    current_time = timezone.localtime(timezone.now()).time()
+    print("DEBUG " * 20)
+    print(current_time)
     
     flights = Flight.objects.filter(
     Q(details__move_from=city) | Q(details__move_to=city), 
