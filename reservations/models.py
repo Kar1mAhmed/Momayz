@@ -45,9 +45,6 @@ class Reservation(models.Model):
     def replace(self, flight_to_reserve_id):
         flight_to_reserve = Flight.objects.get(pk=flight_to_reserve_id)
         
-        user_credits = self.user.credits + self.flight.price # user credits if reservation got cancelled
-        if flight_to_reserve.price > user_credits:
-            raise ValueError('No enough credits')
         
         if flight_to_reserve.taken_seats >= flight_to_reserve.total_seats:
             raise ValueError('No enough seats')

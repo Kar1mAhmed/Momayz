@@ -18,7 +18,7 @@ class ReservationModelTestCase(TestCase):
         self.move_to_area = Area.objects.create(name='To Area', govern=self.govern)
 
         # Create a bus
-        self.bus = Bus.objects.create(name='Test Bus', seats=10)
+        self.bus = Bus.objects.create(name='Test Bus', seats=20)
 
         # Create an appointment
         self.appointment = Appointments.objects.create(time='12:00:00')
@@ -66,9 +66,122 @@ class ReservationModelTestCase(TestCase):
         
         reservation = Reservation.objects.create(user=self.user, flight=flight1)
         self.assertEqual(flight1.taken_seats, 6)
-        reservation.objects.replace(flight2)
-        self.assertEqual(flight1.taken_seats, 9)
+        
+        reservation.replace(flight2.pk)
+        
+        flight1.refresh_from_db()
+        flight2.refresh_from_db()
+        self.user.refresh_from_db()
+        
         self.assertEqual(flight1.taken_seats, 5)
-        self.assertEqual(initial_user_credits, self.user.credits - flight2.price)
+        self.assertEqual(flight2.taken_seats, 9)
+        self.assertEqual(initial_user_credits, self.user.credits + flight2.price)
 
+        self.assertEqual(reservation.flight.date, flight2.date)
+
+
+    def test_no_enough_seats(self):
+        flight = Flight.objects.create(program=self.program1, date='2023-10-29')
+        flight.taken_seats = flight.program.bus.seats
+        flight.save()
+        
+        with self.assertRaises(ValueError):
+            reservation = Reservation.objects.create(user=self.user, flight=flight)
+            
+    
+    def test_no_enough_credits(self):
+        flight = Flight.objects.create(program=self.program1, date='2023-10-29')
+        
+        self.user.credits = 20
+        self.user.save()
+        
+        self.user.refresh_from_db()
+
+        
+        with self.assertRaises(ValueError):
+            reservation = Reservation.objects.create(user=self.user, flight=flight)
+            
+        self.assertEqual(self.user.credits, 20)
+        
+    
+    def test_replace_no_seats(self):
+        self.user.credits = 100
+        self.user.save()
+        
+        flight1 = Flight.objects.create(program=self.program1, date='2023-10-30')
+        
+        flight2 = Flight.objects.create(program=self.program1, date='2023-10-29')
+        flight2.taken_seats = flight2.program.bus.seats
+        flight2.save()
+        
+        init_f1_seats = flight1.taken_seats
+        init_f2_seats = flight2.taken_seats
+        init_user_credits = self.user.credits
+        
+        reservation = Reservation.objects.create(user=self.user, flight=flight1)
+        
+        with self.assertRaises(ValueError):
+            reservation.replace(flight2.pk)
+            
+        self.user.refresh_from_db()
+        flight1.refresh_from_db()
+        flight2.refresh_from_db()
+
+        self.assertEqual(init_f1_seats + 1, flight1.taken_seats)
+        self.assertEqual(init_f2_seats, flight2.taken_seats)
+        self.assertEqual(init_user_credits, self.user.credits + flight1.price)
+
+    def test_replace_diff_destinations(self):
+        
+        program2 = Program.objects.create(govern=self.govern, move_from=self.move_from_area,
+                                                move_to=self.move_from_area, bus=self.bus,
+                                                duration='2 hours', price=150)
+        program2.move_at.add(self.appointment)
+        
+        flight1 = Flight.objects.create(program=self.program1, date='2023-10-30')
+        flight2 = Flight.objects.create(program=program2, date='2023-10-29')
+        
+        init_f1_seats = flight1.taken_seats
+        init_f2_seats = flight2.taken_seats
+        init_user_credits = self.user.credits
+        
+        reservation = Reservation.objects.create(user=self.user, flight=flight1)
+        
+        
+        with self.assertRaises(ValueError):
+            reservation.replace(flight2.pk)
+        
+        
+        self.user.refresh_from_db()
+        flight1.refresh_from_db()
+        flight2.refresh_from_db()
+
+        self.assertEqual(init_f1_seats + 1, flight1.taken_seats)
+        self.assertEqual(init_f2_seats, flight2.taken_seats)
+        self.assertEqual(init_user_credits, self.user.credits + flight1.price)
+    
+    def test_no_seat_number_conflict(self):
+        # Create a flight with enough seats
+        flight = Flight.objects.create(program=self.program1, date='2023-10-29', total_seats=50)  # Adjust seat numbers as needed
+
+        # Create a user
+        user = User.objects.create(email='testo@example.com', name='Test User', username='testuser2', gender='Male', credits=5000)
+
+        seat_numbers = []
+        num_reservations = 15
+
+        for _ in range(num_reservations):
+            reservation = Reservation.objects.create(user=user, flight=flight)
+
+        # Delete some of the reservations (e.g., every even seat number reservation)
+        reservations_to_delete = Reservation.objects.filter(seat_number__in=range(2, num_reservations, 2))
+        reservations_to_delete.delete()
+        
+        for i in range(3):
+            reservation = Reservation.objects.create(user=user, flight=flight)
+
+        flight_seats_taken = Reservation.objects.filter(flight=flight).values_list('seat_number', flat=True)
+        
+
+        self.assertEqual(list(flight_seats_taken), list(set(flight_seats_taken)))
 
