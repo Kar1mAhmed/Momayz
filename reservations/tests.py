@@ -24,10 +24,12 @@ class ReservationModelTestCase(TestCase):
         self.appointment = Appointments.objects.create(time='12:00:00')
 
         # Create a program
-        self.program = Program.objects.create(govern=self.govern, move_from=self.move_from_area, move_to=self.move_to_area, bus=self.bus, duration='2 hours', price=50)
-        self.program.move_at.add(self.appointment)
+        self.program1 = Program.objects.create(govern=self.govern, move_from=self.move_from_area,
+                                                move_to=self.move_to_area, bus=self.bus,
+                                                duration='2 hours', price=50)
         
-        self.flight = Flight.objects.create(program=self.program, date='2023-10-30')
+        self.program1.move_at.add(self.appointment)
+        self.flight = Flight.objects.create(program=self.program1, date='2023-10-20')
 
     def test_create_reservation(self):
         # Save the initial values
@@ -48,7 +50,25 @@ class ReservationModelTestCase(TestCase):
         self.assertEqual(reservation.user, self.user)
         self.assertEqual(reservation.flight, self.flight)
         self.assertEqual(reservation.seat_number, last_seat_number)
+        
+        
+    def test_replace_reservation(self):
+        
+        flight1 = Flight.objects.create(program=self.program1, date='2023-10-29')
+        flight2 = Flight.objects.create(program=self.program1, date='2023-10-30')
 
-    # Write more test cases for different scenarios, e.g., trying to reserve a seat on a full flight.
+        flight1.taken_seats = 5
+        flight2.taken_seats = 8
+        flight1.save()
+        flight2.save()
 
-# You can write additional test cases as needed to cover different scenarios.
+        initial_user_credits = self.user.credits
+        
+        reservation = Reservation.objects.create(user=self.user, flight=flight1)
+        self.assertEqual(flight1.taken_seats, 6)
+        reservation.objects.replace(flight2)
+        self.assertEqual(flight1.taken_seats, 9)
+        self.assertEqual(flight1.taken_seats, 5)
+        self.assertEqual(initial_user_credits, self.user.credits - flight2.price)
+
+
