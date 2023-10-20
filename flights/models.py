@@ -1,4 +1,6 @@
-from django.db import models
+from django.db import models, transaction
+
+from reservations.models import Reservation
 from locations.models import Area, Govern
 from flightsInfo.models import Appointments, Bus
 
@@ -42,6 +44,27 @@ class Flight(models.Model):
             
         super(Flight, self).save(*args, **kwargs)
 
+    def get_seat_number(self): 
+        with transaction.atomic():
+            if self.taken_seats >= self.total_seats:
+                return None
+            
+            reserved_seat_numbers = set(Reservation.objects.filter(flight=self) \
+                                        .values_list('seat_number', flat=True))
+            
+            for seat_number in range(1, self.total_seats + 1):
+                    if seat_number not in reserved_seat_numbers:
+                        self.taken_seats+=1
+                        return seat_number
+            return None
+
+    def increment_taken_seats(self):
+        self.taken_seats += 1
+        self.save()
+        
+    def decrement_taken_seats(self):
+        self.taken_seats -= 1
+        self.save()
 
     class Meta:
         ordering = ['date', 'time']

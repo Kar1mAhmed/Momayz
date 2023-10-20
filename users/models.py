@@ -54,6 +54,20 @@ class User(AbstractBaseUser):
 
     objects = MyUserManager()
 
+    
+    def deduct_credits(self, amount):
+        if self.credits >= amount:
+            self.credits -= amount
+            self.save(update_fields=['credits'])
+            return True  # Deduction successful
+        else:
+            return False  # Not enough credits
+        
+    def refund_credits(self, amount):
+        self.credits += amount
+        self.save(update_fields=['credits'])
+        return True
+    
     def __str__(self):
         return  self.username
 
