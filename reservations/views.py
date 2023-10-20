@@ -57,7 +57,7 @@ def reserve_one_flight(request):
 def edit_reservation(request):
     user = request.user
     reservation_to_cancel = request.data['reservation_to_cancel']
-    flight_to_reserve = request.data['flight_to_reserve']
+    flight_to_reserve_id = request.data['flight_to_reserve']
     
     reservation_to_cancel = Reservation.objects.get(pk=reservation_to_cancel, user=user)
     
@@ -67,7 +67,7 @@ def edit_reservation(request):
         return Response({'detail': 'لا يمكن تعديل الرحلة, موعد الأنطلاق اليوم.'}, status=status.HTTP_400_BAD_REQUEST)
     
     try:
-        new_flight =reservation_to_cancel.replace(flight_to_reserve)
+        new_flight =reservation_to_cancel.replace(flight_to_reserve_id)
             
         serialized_reservation = ReservationSerializer(new_flight)
         return Response({'detail': 'تم تعديل موعد الرحلة بنجاح.',
