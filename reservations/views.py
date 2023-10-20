@@ -3,6 +3,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 
+from django.db import transaction
+
 
 from .models import Reservation
 from flights.models import Flight
@@ -54,14 +56,25 @@ def reserve_one_flight(request):
 @permission_classes([IsAuthenticated])
 def edit_reservation(request):
     user = request.user
-    reservation_id = request.data['reservation_id']
-    reservation = Reservation.objects.get(pk=reservation_id, user=user)
+    reservation_to_cancel = request.data['reservation_to_cancel']
+    flight_to_reserve = request.data['flight_to_reserve']
+    flight_to_reserve = Flight.objects.get(pk=flight_to_reserve)
     
-    #check if the Flight is today
+    reservation_to_cancel = Reservation.objects.get(pk=reservation_to_cancel, user=user)
+    
     cairo_timezone = pytz.timezone('Africa/Cairo')
     current_date_in_cairo = timezone.now().astimezone(cairo_timezone).date()
-    if reservation.flight.date == current_date_in_cairo:
+    if reservation_to_cancel.flight.date == current_date_in_cairo:
         return Response({'detail': 'لا يمكن تعديل الرحلة, موعد الأنطلاق اليوم.'}, status=status.HTTP_400_BAD_REQUEST)
     
-    
-    return Response({'detail': "A7oooo"})
+    try:
+        reservation_to_cancel.delete()
+        reservation = Reservation.objects.create(user=user, flight=flight_to_reserve)
+            
+        serialized_reservation = ReservationSerializer(reservation)
+        return Response({'detail': 'تم تعديل موعد الرحلة بنجاح.',
+                        'reservation': serialized_reservation.data}, status=status.HTTP_200_OK)
+        
+    except ValueError as e:
+        print(e)
+        return Response({'detail': 'فشل الحجز برجاء المحاولة مرة أخرى.'}, status=status.HTTP_200_OK)

@@ -59,6 +59,25 @@ def tomorrow_flights(request):
     return Response(data_serialized.data, status=status.HTTP_200_OK)
 
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def flights_by_date(request):
+    user = request.user 
+    city = user.city
+    
+    date = request.GET.get('date')
+
+    flights = Flight.objects.filter(
+    Q(program__move_from=city) | Q(program__move_to=city), 
+    cancelled=False,
+    taken_seats__lt=models.F('total_seats'),
+    date=date,
+    )
+
+    data_serialized = FlightSerializer(flights, many=True)
+    return Response(data_serialized.data, status=status.HTTP_200_OK)
+
+
 
 
 def create_flight(program, date):
