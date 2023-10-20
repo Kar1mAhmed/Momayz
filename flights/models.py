@@ -1,6 +1,5 @@
-from django.db import models, transaction
+from django.db import models
 
-from reservations.models import Reservation
 from locations.models import Area, Govern
 from flightsInfo.models import Appointments, Bus
 
@@ -30,7 +29,7 @@ class Flight(models.Model):
     time = models.TimeField(default="00:00:00")
     taken_seats = models.SmallIntegerField(default=0, validators=[MinValueValidator(0)])
     total_seats = models.SmallIntegerField(default=0, validators=[MinValueValidator(0)])
-    cancelled = models.BooleanField(default=False)
+    canceled  = models.BooleanField(default=False)
     price = models.SmallIntegerField(validators=[MinValueValidator(0)], default=25)
     
     def save(self, *args, **kwargs):
@@ -44,19 +43,6 @@ class Flight(models.Model):
             
         super(Flight, self).save(*args, **kwargs)
 
-    def get_seat_number(self): 
-        with transaction.atomic():
-            if self.taken_seats >= self.total_seats:
-                return None
-            
-            reserved_seat_numbers = set(Reservation.objects.filter(flight=self) \
-                                        .values_list('seat_number', flat=True))
-            
-            for seat_number in range(1, self.total_seats + 1):
-                    if seat_number not in reserved_seat_numbers:
-                        self.taken_seats+=1
-                        return seat_number
-            return None
 
     def increment_taken_seats(self):
         self.taken_seats += 1

@@ -97,26 +97,19 @@ WSGI_APPLICATION = 'project.wsgi.application'
 
 DATABASES = {
     'default': {
-        # 'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': BASE_DIR / 'db.sqlite3',
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'railway',
-        'USER': 'postgres',
-        'PASSWORD': 'YxRprv0nVZZ8ITSFdQNf',
-        'HOST': 'containers-us-west-42.railway.app',
-        'PORT': '6861',
-    },
-    
-    'test': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
-    }
+        # 'ENGINE': 'django.db.backends.postgresql',
+        # 'NAME': 'railway',
+        # 'USER': 'postgres',
+        # 'PASSWORD': 'YxRprv0nVZZ8ITSFdQNf',
+        # 'HOST': 'containers-us-west-42.railway.app',
+        # 'PORT': '6861',
+    },
+    
 }
 
-TEST = {
-    'NAME': 'test_database',
-    'MIRROR': 'default',  # Use the 'default' database settings for the test database.
-}
+
 
 
 # Password validation

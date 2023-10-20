@@ -1,5 +1,4 @@
 from django.db import models
-from django.db.models import F
 from users.models import User
 from flights.models import Flight
 from django.db import transaction
@@ -20,10 +19,11 @@ class Reservation(models.Model):
     def save(self, *args, **kwargs):
         if not self.pk:
             with transaction.atomic():
-                seat_number = self.flight.get_seat_number()
+                seat_number = self._get_seat_number(self.flight)
                 if seat_number:
                     if self.user.deduct_credits(self.flight.price):
                         self.seat_number = seat_number
+                        self.flight.increment_taken_seats()
                         return super().save(*args, **kwargs)
                     else:
                         raise ValueError("No enough credits.")
@@ -60,7 +60,7 @@ class Reservation(models.Model):
                 self.flight.decrement_taken_seats()
                 flight_to_reserve.increment_taken_seats()
                 
-                seat = flight_to_reserve.get_seat_number()
+                seat = self._get_seat_number(flight_to_reserve)
                 
                 self.flight = flight_to_reserve
                 self.seat_number = seat
@@ -69,3 +69,16 @@ class Reservation(models.Model):
                 
         except Exception as e:
             raise str(e)
+        
+    def _get_seat_number(self, flight): 
+        with transaction.atomic():
+            if flight.taken_seats >= flight.total_seats:
+                return None
+            
+            reserved_seat_numbers = set(Reservation.objects.filter(flight=flight) \
+                                        .values_list('seat_number', flat=True))
+            
+            for seat_number in range(1, flight.total_seats + 1):
+                    if seat_number not in reserved_seat_numbers:
+                        return seat_number
+            return None
