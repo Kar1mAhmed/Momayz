@@ -6,7 +6,7 @@ class ReservationSerializer(serializers.ModelSerializer):
     move_to = serializers.CharField(source='flight.program.move_to')
     duration = serializers.CharField(source='flight.program.duration')
     date = serializers.CharField(source='flight.date')
-    price = serializers.CharField(source='flight.price')
+    price = serializers.CharField(source='flight.program.price')
     time = serializers.CharField(source='flight.time')
     class Meta:
         model = Reservation

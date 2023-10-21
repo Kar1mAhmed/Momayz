@@ -21,7 +21,7 @@ class Reservation(models.Model):
             with transaction.atomic():
                 seat_number = self._get_seat_number(self.flight)
                 if seat_number:
-                    if self.user.deduct_credits(self.flight.price):
+                    if self.user.deduct_credits(self.flight.program.price):
                         self.seat_number = seat_number
                         self.flight.increment_taken_seats()
                         return super().save(*args, **kwargs)
@@ -36,7 +36,7 @@ class Reservation(models.Model):
         try:
             with transaction.atomic():
                 self.flight.decrement_taken_seats()
-                self.user.refund_credits(self.flight.price)
+                self.user.refund_credits(self.flight.program.price)
                 return super().delete(*args, **kwargs)
         except Exception as e:
             raise e

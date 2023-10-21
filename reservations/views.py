@@ -18,7 +18,9 @@ import pytz
 @permission_classes([IsAuthenticated])
 def get_my_reservation(request):
     user = request.user
-    my_flights = Reservation.objects.filter(user=user)
+    cairo_timezone = pytz.timezone('Africa/Cairo')
+    today = timezone.now().astimezone(cairo_timezone).date()
+    my_flights = Reservation.objects.filter(user=user, date__gte=today)
     serialized_data = ReservationSerializer(my_flights, many=True)
     return Response(serialized_data.data, status=status.HTTP_200_OK)
 
@@ -34,7 +36,7 @@ def reserve_one_flight(request):
     except Flight.DoesNotExist:
         return Response({'detail': "لم يتم العثور علي الرحلة."}, status=status.HTTP_404_NOT_FOUND)
     
-    if flight.price > user.credits:
+    if flight.program.price > user.credits:
         return Response({'detail' : 'لا يتوفر رصيد كافي لحجز الرحلة.'}, status=status.HTTP_400_BAD_REQUEST)
     
     try:

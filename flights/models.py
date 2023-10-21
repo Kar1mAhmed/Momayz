@@ -30,7 +30,6 @@ class Flight(models.Model):
     taken_seats = models.SmallIntegerField(default=0, validators=[MinValueValidator(0)])
     total_seats = models.SmallIntegerField(default=0, validators=[MinValueValidator(0)])
     canceled  = models.BooleanField(default=False)
-    price = models.SmallIntegerField(validators=[MinValueValidator(0)], default=25)
     
     def save(self, *args, **kwargs):
         if not self.pk:
@@ -38,10 +37,8 @@ class Flight(models.Model):
                 self.time = self.program.move_at.first().time
             if not self.total_seats:
                 self.total_seats = self.program.bus.seats
-            if not self.price:
-                self.price = self.program.price
             
-        super(Flight, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
     def increment_taken_seats(self):

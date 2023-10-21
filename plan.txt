@@ -1,2 +1,0 @@
-- code to create Flights depending of flight details
-    -for every FD(flight details) loop through times and add flight with that time

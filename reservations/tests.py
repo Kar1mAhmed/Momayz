@@ -8,22 +8,16 @@ from flightsInfo.models import Bus, Appointments
 
 class ReservationModelTestCase(TestCase):
     def setUp(self):
-        # Create a user and a flight for testing
         self.user = User.objects.create(email='test@example.com', name='Test User', username='testuser', gender='Male', credits=100)
-        # Create a govern
         self.govern = Govern.objects.create(name='Test Govern')
 
-        # Create areas
         self.move_from_area = Area.objects.create(name='From Area', govern=self.govern)
         self.move_to_area = Area.objects.create(name='To Area', govern=self.govern)
 
-        # Create a bus
         self.bus = Bus.objects.create(name='Test Bus', seats=20)
 
-        # Create an appointment
         self.appointment = Appointments.objects.create(time='12:00:00')
 
-        # Create a program
         self.program1 = Program.objects.create(govern=self.govern, move_from=self.move_from_area,
                                                 move_to=self.move_to_area, bus=self.bus,
                                                 duration='2 hours', price=50)
@@ -45,12 +39,11 @@ class ReservationModelTestCase(TestCase):
         self.user.refresh_from_db()
 
         self.assertEqual(self.flight.taken_seats, initial_taken_seats + 1)
-        self.assertEqual(self.user.credits, initial_user_credits - self.flight.price)
+        self.assertEqual(self.user.credits, initial_user_credits - self.flight.program.price)
 
         self.assertEqual(reservation.user, self.user)
         self.assertEqual(reservation.flight, self.flight)
         self.assertEqual(reservation.seat_number, last_seat_number)
-        
         
     def test_replace_reservation(self):
         
@@ -75,19 +68,24 @@ class ReservationModelTestCase(TestCase):
         
         self.assertEqual(flight1.taken_seats, 5)
         self.assertEqual(flight2.taken_seats, 9)
-        self.assertEqual(initial_user_credits, self.user.credits + flight2.price)
+        self.assertEqual(initial_user_credits, self.user.credits + flight2.program.price)
 
         self.assertEqual(reservation.flight.date, flight2.date)
 
-
     def test_no_enough_seats(self):
+    
         flight = Flight.objects.create(program=self.program1, date='2023-10-29')
         flight.taken_seats = flight.program.bus.seats
         flight.save()
         
+        user_init_credits = self.user.credits
+        flight_init_seats = flight.taken_seats
+        
         with self.assertRaises(ValueError):
             reservation = Reservation.objects.create(user=self.user, flight=flight)
             
+        self.assertEqual(user_init_credits, self.user.credits)
+        self.assertEqual(flight_init_seats, flight.taken_seats)
     
     def test_no_enough_credits(self):
         flight = Flight.objects.create(program=self.program1, date='2023-10-29')
@@ -102,7 +100,6 @@ class ReservationModelTestCase(TestCase):
             reservation = Reservation.objects.create(user=self.user, flight=flight)
             
         self.assertEqual(self.user.credits, 20)
-        
     
     def test_replace_no_seats(self):
         self.user.credits = 100
@@ -129,7 +126,7 @@ class ReservationModelTestCase(TestCase):
 
         self.assertEqual(init_f1_seats + 1, flight1.taken_seats)
         self.assertEqual(init_f2_seats, flight2.taken_seats)
-        self.assertEqual(init_user_credits, self.user.credits + flight1.price)
+        self.assertEqual(init_user_credits, self.user.credits + flight1.program.price)
 
     def test_replace_diff_destinations(self):
         
@@ -158,7 +155,7 @@ class ReservationModelTestCase(TestCase):
 
         self.assertEqual(init_f1_seats + 1, flight1.taken_seats)
         self.assertEqual(init_f2_seats, flight2.taken_seats)
-        self.assertEqual(init_user_credits, self.user.credits + flight1.price)
+        self.assertEqual(init_user_credits, self.user.credits + flight1.program.price)
     
     def test_no_seat_number_conflict(self):
         # Create a flight with enough seats
@@ -185,3 +182,26 @@ class ReservationModelTestCase(TestCase):
 
         self.assertEqual(list(flight_seats_taken), list(set(flight_seats_taken)))
 
+    def test_check_seat_number(self):
+        program_local = Program.objects.create(govern=self.govern, move_from=self.move_from_area,
+                                                move_to=self.move_from_area, bus=self.bus,
+                                                duration='2 hours', price=50)
+        program_local.move_at.add(self.appointment)
+        flight = Flight.objects.create(program=program_local, date='2023-10-11')
+        
+        user = User.objects.create(email='teto@example.com', name='M User',
+                                    username='Medo12', gender='Male', credits=250)
+        
+        reservations = []
+        for i in range(1,6):
+            res =Reservation.objects.create(flight=flight, user=user)
+            reservations.append(res)
+            
+        reservations[1].delete()
+        
+        new_reservation = Reservation.objects.create(flight=flight, user=user)
+        
+        user.refresh_from_db()
+        
+        self.assertEqual(user.credits, 0)
+        self.assertEqual(new_reservation.seat_number, 2)
