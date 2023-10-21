@@ -8,5 +8,5 @@ class PackageSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_days_per_week(self, obj):
-        return obj.num_of_flights / 4
+        return int(obj.num_of_flights / 4)
 
