@@ -1,7 +1,14 @@
 from django.db import models
-from django import forms
-from datetime import datetime
 
+
+
+class Package(models.Model):
+    price = models.SmallIntegerField()
+    num_of_flights = models.SmallIntegerField()
+    name = models.CharField(max_length=30)
+    
+    def __str__(self) -> str:
+        return self.name
 
 class Bus(models.Model):
     name = models.CharField(max_length=30)
