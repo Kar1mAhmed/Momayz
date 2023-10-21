@@ -2,15 +2,19 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+
 from django.db import models
-
 from django.db.models import Q
+from django.utils import timezone
+from django.core.exceptions import ObjectDoesNotExist
 
-from datetime import date, timedelta
+
+from datetime import date, timedelta, datetime
+import pytz
+
 
 from .models import Flight, Program
 from .serializers import FlightSerializer
-
 
 
 
@@ -92,3 +96,37 @@ def add_flight(request):
     program = Program.objects.get(pk=flight_id)
     create_flight(program=program, date=date)
     return Response({"detail": "flight Created"}, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def add_flight_for_next_month(request):
+    program_id = request.data['pk']
+    
+    program = Program.objects.get(pk=program_id)
+    cairo_timezone = pytz.timezone('Africa/Cairo')
+    today_date = timezone.now().astimezone(cairo_timezone).date()
+    dates = get_next_30_dates(str(today_date))
+    
+    for date in dates:
+        try:
+            flight = Flight.objects.get(program=program, date=date)
+        except ObjectDoesNotExist:
+            create_flight(program=program, date=date)
+            
+    return Response({"detail": "flights Created"}, status=status.HTTP_200_OK)
+
+
+
+def get_next_30_dates(start_date):
+    # Convert the start_date to a datetime object
+    start_date = datetime.strptime(start_date, '%Y-%m-%d')
+
+    # Create a list to store the next 30 dates
+    next_dates = []
+
+    # Generate the next 30 dates
+    for _ in range(30):
+        next_dates.append(start_date.strftime('%Y-%m-%d'))
+        start_date += timedelta(days=1)
+
+    return next_dates

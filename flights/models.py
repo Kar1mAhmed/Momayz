@@ -16,6 +16,8 @@ class Program(models.Model):
     duration = models.CharField(max_length=8)
     price = models.SmallIntegerField(validators=[MinValueValidator(0)], default=25)
     
+    class Meta:
+        unique_together = ('move_from', 'move_to')
     
     def __str__(self) -> str:
         return f"{self.move_from} إلي {self.move_to}"
@@ -30,6 +32,9 @@ class Flight(models.Model):
     taken_seats = models.SmallIntegerField(default=0, validators=[MinValueValidator(0)])
     total_seats = models.SmallIntegerField(default=0, validators=[MinValueValidator(0)])
     canceled  = models.BooleanField(default=False)
+    
+    class Meta:
+        unique_together = ('time', 'program', 'date')
     
     def save(self, *args, **kwargs):
         if not self.pk:
