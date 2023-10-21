@@ -14,7 +14,7 @@ class ReservationModelTestCase(TestCase):
         self.move_from_area = Area.objects.create(name='From Area', govern=self.govern)
         self.move_to_area = Area.objects.create(name='To Area', govern=self.govern)
 
-        self.bus = Bus.objects.create(name='Test Bus', seats=20)
+        self.bus = Bus.objects.create(name='Test Bus', seats=10)
 
         self.appointment = Appointments.objects.create(time='12:00:00')
 
@@ -31,8 +31,8 @@ class ReservationModelTestCase(TestCase):
         initial_user_credits = self.user.credits
         
         reservation = Reservation.objects.create(user=self.user, flight=self.flight)
-        next_expected_seat_number = reservation._get_seat_number(reservation.flight)
-        last_seat_number = next_expected_seat_number - 1
+        next_expected_seat_number = reservation._get_seat_number(reservation.flight, self.user.gender)
+        last_seat_number = next_expected_seat_number + 1
 
         # Retrieve the flight and user instances again to get updated values
         self.flight.refresh_from_db()
@@ -190,7 +190,7 @@ class ReservationModelTestCase(TestCase):
         flight = Flight.objects.create(program=program_local, date='2023-10-11')
         
         user = User.objects.create(email='teto@example.com', name='M User',
-                                    username='Medo12', gender='Male', credits=250)
+                                    username='Medo12', gender='Female', credits=250)
         
         reservations = []
         for i in range(1,6):
@@ -205,3 +205,18 @@ class ReservationModelTestCase(TestCase):
         
         self.assertEqual(user.credits, 0)
         self.assertEqual(new_reservation.seat_number, 2)
+
+    def test_gender_seats(self):
+        flight = Flight.objects.create(program=self.program1, date='2012-12-12')
+        
+        for i in range(5):
+            female = User.objects.create(email=f'{i}@example.com', name=f'UserFemale{i}',
+                                        username=f'FemaleUser{i}', gender='Female', credits=100)
+            res = Reservation.objects.create(user=female, flight=flight)
+            self.assertLess(res.seat_number, 6)
+            
+        for i in range(5):
+            female = User.objects.create(email=f'{i*2}@Male.com', name=f'UserMale{i*2}',
+                                        username=f'MaleUser{i*2}', gender='Male', credits=100)
+            res = Reservation.objects.create(user=female, flight=flight)
+            self.assertGreater(res.seat_number, 5)
