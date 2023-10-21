@@ -20,7 +20,7 @@ def get_my_reservation(request):
     user = request.user
     cairo_timezone = pytz.timezone('Africa/Cairo')
     today = timezone.now().astimezone(cairo_timezone).date()
-    my_flights = Reservation.objects.filter(user=user, date__gte=today)
+    my_flights = Reservation.objects.filter(user=user, flight__date__gte=today)
     serialized_data = ReservationSerializer(my_flights, many=True)
     return Response(serialized_data.data, status=status.HTTP_200_OK)
 
