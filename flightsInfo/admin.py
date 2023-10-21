@@ -13,7 +13,7 @@ class PackageAdmin(admin.ModelAdmin):
 
 admin.site.register(Bus, BusAdmin)
 admin.site.register(Appointments, AppointmentsAdmin)
-admin.site.register(PackageAdmin, Package)
+admin.site.register(Package, PackageAdmin)
 
 
 
