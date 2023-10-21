@@ -14,4 +14,4 @@ class PackageSerializer(serializers.ModelSerializer):
 class AppointmentsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Appointments
-        fields = '__all__'
+        fields = ['time']

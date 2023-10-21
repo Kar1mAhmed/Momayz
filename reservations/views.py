@@ -70,7 +70,7 @@ def reserve_package(request):
     if request.user.credits < package.price:
         return Response({'detail': 'No enough credits.'}, status=status.HTTP_400_BAD_REQUEST)
     
-    if len(days) != package.num_of_flights / 4:
+    if len(days) * 2 != package.num_of_flights / 4:
         return Response({'details': f'This package is {int(package.num_of_flights / 4)} days per week'})
     
     flights = get_flights(days, request.user)
@@ -123,9 +123,9 @@ def get_flights(days, user):
         dates_of_day = get_dates(day['day'])
         for date in dates_of_day:
             # The Flight that goes from user Home to Collage
-            flights.append(Flight.objects.get(date=date, program__move_from=user.city,program__move_at=day['go_at']))
+            flights.append(Flight.objects.get(date=date, program__move_from=user.city, time=day['go_at']))
             # The Flight that goes from Collage to user destination 
-            flights.append(Flight.objects.get(date=date, program__move_to=user.city, program__move_at=day['return_at']))
+            flights.append(Flight.objects.get(date=date, program__move_to=user.city, time=day['return_at']))
     return flights
 
 
