@@ -70,8 +70,11 @@ def reserve_package(request):
     if request.user.credits < package.price:
         return Response({'detail': 'No enough credits.'}, status=status.HTTP_400_BAD_REQUEST)
     
-    if len(days) * 2 != package.num_of_flights / 4:
-        return Response({'details': f'This package is {int(package.num_of_flights / 4)} days per week'})
+    WEEKS_PER_MONTH = 4
+    FLIGHT_PER_DAY = 2
+    
+    if len(days) * FLIGHT_PER_DAY != package.num_of_flights / WEEKS_PER_MONTH:
+        return Response({'details': f'This package is {int(package.num_of_flights / WEEKS_PER_MONTH)} days per week'})
     
     flights = get_flights(days, request.user)
     

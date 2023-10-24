@@ -108,9 +108,8 @@ def add_flight_for_next_month(request):
     dates = get_next_30_dates(str(today_date))
     
     for date in dates:
-        try:
-            flight = Flight.objects.get(program=program, date=date)
-        except ObjectDoesNotExist:
+        flights = Flight.objects.filter(program=program, date=date)
+        if not flights.exists():
             create_flight(program=program, date=date)
             
     return Response({"detail": "flights Created"}, status=status.HTTP_200_OK)
