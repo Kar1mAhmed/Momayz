@@ -1,8 +1,9 @@
-from django.db import models
+from django.db import models, transaction
+
+
 from users.models import User
 from flights.models import Flight
-from django.db import transaction
-
+from flightsInfo.models import Package
 
 
 
@@ -11,7 +12,9 @@ class Reservation(models.Model):
     flight = models.ForeignKey(Flight, on_delete=models.PROTECT)
     reserved_at = models.DateTimeField(auto_now_add=True)
     seat_number = models.SmallIntegerField()
+    package = models.ForeignKey(Package, on_delete=models.PROTECT, null=True, blank=True)
 
+    
     class Meta:
         ordering = ['flight__date', 'flight__time']
         unique_together = ('flight', 'seat_number')
@@ -21,7 +24,11 @@ class Reservation(models.Model):
             with transaction.atomic():
                 seat_number = self._get_seat_number(self.flight, self.user.gender)
                 if seat_number:
-                    if self.user.deduct_credits(self.flight.program.price):
+                    if not self.package:
+                        credits_deducted = self.user.deduct_credits(self.flight.program.price)
+                    else:
+                        credits_deducted = True
+                    if credits_deducted:
                         self.seat_number = seat_number
                         self.flight.increment_taken_seats()
                         return super().save(*args, **kwargs)
@@ -36,7 +43,12 @@ class Reservation(models.Model):
         try:
             with transaction.atomic():
                 self.flight.decrement_taken_seats()
-                self.user.refund_credits(self.flight.program.price)
+                if self.package:
+                    credits_to_refund = self.package.price / self.package.num_of_flights
+                    self.user.refund_credits(credits_to_refund)
+                else:
+                    credits_to_refund = self.flight.program.price
+                    self.user.refund_credits(self.flight.program.price)
                 return super().delete(*args, **kwargs)
         except Exception as e:
             raise e

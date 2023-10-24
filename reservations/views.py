@@ -33,7 +33,7 @@ def get_my_reservation(request):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def reserve_one_flight(request):
+def book_one_flight(request):
     user = request.user
     flight_id = request.data['flight_id']
     
@@ -62,7 +62,7 @@ def reserve_one_flight(request):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def reserve_package(request):
+def book_package(request):
     package_id = request.data['package_id']
     days = request.data['days']
     package = Package.objects.get(pk=package_id)
@@ -78,15 +78,22 @@ def reserve_package(request):
     
     flights = get_flights(days, request.user)
     
-    with transaction.atomic():
-        for flight in flights:
-            try:
-                Reservation.objects.create(user=request.user, flight=flight)
-            except Exception as e:
-                flight_serialized = FlightSerializer(flight)
-                return Response({
-                    'detail': e,
-                    'error_at_flight': flight_serialized.data},
+    if not flights or len(flights) != len(days) * FLIGHT_PER_DAY * WEEKS_PER_MONTH:
+        return Response({'detail': 'something went wrong please try again.'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    last_flight = None
+    try:
+        with transaction.atomic():
+            for flight in flights:
+                last_flight = flight
+                Reservation.objects.create(user=request.user, flight=flight, package=package)
+                request.user.deduct_credits(package.price)
+                
+    except Exception as e:
+        flight_with_error = FlightSerializer(last_flight)
+        return Response({
+                    'detail': str(e),
+                    'error_at_flight': flight_with_error.data},
                     status=status.HTTP_400_BAD_REQUEST)
         
     return Response({'detail': 'Package Reserved successfully.'})
@@ -126,9 +133,12 @@ def get_flights(days, user):
         dates_of_day = get_dates(day['day'])
         for date in dates_of_day:
             # The Flight that goes from user Home to Collage
-            flights.append(Flight.objects.get(date=date, program__move_from=user.city, time=day['go_at']))
-            # The Flight that goes from Collage to user destination 
-            flights.append(Flight.objects.get(date=date, program__move_to=user.city, time=day['return_at']))
+            try :
+                flights.append(Flight.objects.get(date=date, program__move_from=user.city, time=day['go_at']))
+                # The Flight that goes from Collage to user destination 
+                flights.append(Flight.objects.get(date=date, program__move_to=user.city, time=day['return_at']))
+            except Exception as e:
+                return False
     return flights
 
 
