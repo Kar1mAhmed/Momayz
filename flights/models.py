@@ -47,12 +47,18 @@ class Flight(models.Model):
 
 
     def increment_taken_seats(self):
-        self.taken_seats += 1
-        self.save()
+        if self.taken_seats < self.total_seats:
+            self.taken_seats += 1
+            self.save()
+        else:
+            raise ValueError("Seats reaching limits.")
         
     def decrement_taken_seats(self):
-        self.taken_seats -= 1
-        self.save()
+        if self.taken_seats > 0:
+            self.taken_seats -= 1
+            self.save()
+        else:
+            raise ValueError("Seats reaching limits.")
 
     class Meta:
         ordering = ['date', 'time']
