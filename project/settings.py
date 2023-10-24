@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
 
-    
+    'settings',
     'users',
     'locations',
     'otp',
