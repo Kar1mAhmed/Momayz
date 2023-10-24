@@ -68,9 +68,11 @@ def flights_by_date(request):
     city = user.city
     
     date = request.GET.get('date')
+    move_from = request.GET.get('move_from')
+    move_to = request.GET.get('move_to')
 
     flights = Flight.objects.filter(
-    Q(program__move_from=city) | Q(program__move_to=city), 
+    Q(program__move_from__name=move_from) | Q(program__move_to__name=move_to), 
     canceled=False,
     taken_seats__lt=models.F('total_seats'),
     date=date,
