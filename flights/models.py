@@ -14,7 +14,7 @@ class Program(models.Model):
     move_at = models.ManyToManyField(Appointments)
     bus = models.ForeignKey(Bus, on_delete=models.PROTECT)
     duration = models.CharField(max_length=8)
-    price = models.SmallIntegerField(validators=[MinValueValidator(0)], default=25)
+    price = models.DecimalField(max_digits=8, decimal_places=2)
     
     class Meta:
         unique_together = ('move_from', 'move_to')
