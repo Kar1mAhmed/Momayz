@@ -16,8 +16,7 @@ def get_flights(days, user):
                 flights.append(Flight.objects.get(date=date, program__move_from=user.city, time=day['go_at']))
                 # The Flight that goes from Collage to user destination 
                 flights.append(Flight.objects.get(date=date, program__move_to=user.city, time=day['return_at']))
-            except Exception as e:
-                print(e)
+            except Exception as _:
                 return False
     return flights
 
