@@ -13,7 +13,6 @@ def get_flights(days, user):
         for date in dates_of_day:
             # The Flight that goes from user Home to Collage
             try :
-                print('z')
                 flights.append(Flight.objects.get(date=date, program__move_from=user.city, time=day['go_at']))
                 # The Flight that goes from Collage to user destination 
                 flights.append(Flight.objects.get(date=date, program__move_to=user.city, time=day['return_at']))
