@@ -87,7 +87,7 @@ def book_package(request):
             for flight in flights:
                 last_flight = flight
                 Reservation.objects.create(user=request.user, flight=flight, package=package)
-                request.user.deduct_credits(package.price)
+            request.user.deduct_credits(package.price)
                 
     except Exception as e:
         flight_with_error = FlightSerializer(last_flight)
