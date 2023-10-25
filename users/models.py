@@ -61,7 +61,7 @@ class User(AbstractBaseUser):
             self.save(update_fields=['credits'])
             return True  # Deduction successful
         else:
-            return False  # Not enough credits
+            raise ValueError('No enough credits.')
         
     def refund_credits(self, amount):
         self.credits += amount
@@ -70,9 +70,3 @@ class User(AbstractBaseUser):
     
     def __str__(self):
         return  self.username
-
-    def has_perm(self, perm, obj=None):
-        return self.is_superuser
-
-    def has_module_perms(self, app_label):
-        return True

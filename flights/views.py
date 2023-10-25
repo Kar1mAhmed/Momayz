@@ -6,16 +6,16 @@ from rest_framework.permissions import IsAuthenticated
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
-from django.core.exceptions import ObjectDoesNotExist
 
 
-from datetime import date, timedelta, datetime
+from datetime import date, timedelta
 import pytz
 
 
 from .models import Flight, Program
 from .serializers import FlightSerializer
 
+from .helpers import create_flight, get_next_30_dates
 
 
 @api_view(['GET'])
@@ -84,10 +84,7 @@ def flights_by_date(request):
 
 
 
-def create_flight(program, date):
-    for appointment in program.move_at.all():
-        new_flight = Flight.objects.create(program=program, date=date, time=appointment.time)
-        new_flight.save()
+
 
 
 @api_view(['POST'])
@@ -118,16 +115,3 @@ def add_flight_for_next_month(request):
 
 
 
-def get_next_30_dates(start_date):
-    # Convert the start_date to a datetime object
-    start_date = datetime.strptime(start_date, '%Y-%m-%d')
-
-    # Create a list to store the next 30 dates
-    next_dates = []
-
-    # Generate the next 30 dates
-    for _ in range(30):
-        next_dates.append(start_date.strftime('%Y-%m-%d'))
-        start_date += timedelta(days=1)
-
-    return next_dates

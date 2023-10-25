@@ -24,11 +24,7 @@ class Reservation(models.Model):
             with transaction.atomic():
                 seat_number = self._get_seat_number(self.flight, self.user.gender)
                 if seat_number:
-                    if not self.package:
-                        credits_deducted = self.user.deduct_credits(self.flight.program.price)
-                    else:
-                        credits_deducted = True
-                    if credits_deducted:
+                    if self._handel_credits():
                         self.seat_number = seat_number
                         self.flight.increment_taken_seats()
                         return super().save(*args, **kwargs)
@@ -102,3 +98,13 @@ class Reservation(models.Model):
                     if seat_number not in reserved_seat_numbers:
                         return seat_number
             return None
+        
+        
+    def _handel_credits(self):
+        if not self.package:
+            try:
+                self.user.deduct_credits(self.flight.program.price)
+                return True
+            except:
+                return False
+        return True
