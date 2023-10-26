@@ -23,7 +23,7 @@ from .helpers import get_flights
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def get_my_reservation(request):
+def my_reservation(request):
     user = request.user
     cairo_timezone = pytz.timezone('Africa/Cairo')
     today = timezone.now().astimezone(cairo_timezone).date()
@@ -31,6 +31,33 @@ def get_my_reservation(request):
     serialized_data = ReservationSerializer(my_flights, many=True)
     return Response(serialized_data.data, status=status.HTTP_200_OK)
 
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def my_package_status(request):
+    user = request.user
+    cairo_timezone = pytz.timezone('Africa/Cairo')
+    today = timezone.now().astimezone(cairo_timezone).date()
+    current_time = timezone.now().astimezone(cairo_timezone).time()
+    
+    my_package_reservations = Reservation.objects.filter(user=user, package__isnull=False)
+    
+    my_package_remaining_reservations = my_package_reservations.exclude(
+    flight__date__lt=today,
+    flight__date=today,
+    flight__time__lt=current_time)
+    
+    if my_package_reservations.count() > 1:
+        package_name = my_package_reservations.first().package.name
+    else:
+        package_name = None
+    
+    return Response({
+        'package_name': package_name,
+        'total_reservations': my_package_reservations.count(),
+        'used_reservations': my_package_reservations.count() - my_package_remaining_reservations.count()},
+        status=status.HTTP_200_OK)
+    
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
