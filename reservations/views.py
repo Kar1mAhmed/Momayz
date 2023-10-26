@@ -97,7 +97,7 @@ def book_package(request):
                     'error_at_flight': flight_with_error.data},
                     status=status.HTTP_400_BAD_REQUEST)
         
-    return Response({'detail': 'Package Reserved successfully.'})
+    return Response({'detail': 'Package Reserved successfully.'}, status=status.HTTP_201_CREATED)
     
 
 @api_view(['POST'])
