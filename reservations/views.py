@@ -66,7 +66,11 @@ def book_one_flight(request):
 def book_package(request):
     package_id = request.data['package_id']
     days = request.data['days']
-    package = Package.objects.get(pk=package_id)
+    
+    try:
+        package = Package.objects.get(pk=package_id)
+    except ObjectDoesNotExist:
+        return Response({'detail': 'Package doesn\'t exist.'})
     
     if request.user.credits < package.price:
         return Response({'detail': 'No enough credits.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -79,7 +83,7 @@ def book_package(request):
     
     flights = get_flights(days, request.user)
     
-    if not flights or len(flights) != len(days) * FLIGHT_PER_DAY * WEEKS_PER_MONTH:
+    if not flights or len(flights) != package.num_of_flights:
         return Response({'detail': 'something went wrong please try again.'}, status=status.HTTP_400_BAD_REQUEST)
     
     last_flight = None
