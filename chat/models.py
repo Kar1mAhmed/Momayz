@@ -14,7 +14,7 @@ class Message(models.Model):
     
     
     class Meta: 
-        ordering = ('time',)
+        ordering = ['-time']
         
     def __str__(self) -> str:
         text = self.text if self.text is not None else "-Link-"
