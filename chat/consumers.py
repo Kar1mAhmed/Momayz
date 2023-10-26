@@ -52,8 +52,8 @@ class AdminChatConsumer(WebsocketConsumer):
         self.user = get_user(self.scope.get("headers"))
         self.room_name = 'admin'
         
-        # Reject the request if user is not staff and trying to connect to another user socket
-        if not self.user.is_super_user or not self.user.is_staff:
+        # Reject the request if user not admin
+        if not self.user.is_superuser and not self.user.is_staff:
             self.close()
         
         self.room_group_name = f"chat_{self.room_name}"
