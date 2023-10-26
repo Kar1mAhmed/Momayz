@@ -5,4 +5,4 @@ from .models import Message
 class MessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
-        exclude = ['chat']
+        fields = '__all__'
