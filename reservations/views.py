@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from django.db import transaction
 from django.utils import timezone
+from django.core.exceptions import ObjectDoesNotExist
 
 import pytz
 
@@ -106,7 +107,10 @@ def edit_reservation(request):
     reservation_to_cancel = request.data['reservation_to_cancel']
     flight_to_reserve_id = request.data['flight_to_reserve']
     
-    reservation_to_cancel = Reservation.objects.get(pk=reservation_to_cancel, user=user)
+    try:
+        reservation_to_cancel = Reservation.objects.get(pk=reservation_to_cancel, user=user)
+    except ObjectDoesNotExist:
+        return Response({'detail': 'Reservation not found.'}, status=status.HTTP_400_BAD_REQUEST)
     
     cairo_timezone = pytz.timezone('Africa/Cairo')
     current_date_in_cairo = timezone.now().astimezone(cairo_timezone).date()

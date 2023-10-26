@@ -112,17 +112,19 @@ DATABASES = {
         'HOST': 'containers-us-west-42.railway.app',
         'PORT': '6861',
     },
-    
-    'test': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
 }
 
-TEST = {
-    'NAME': 'test_database',
-    'MIRROR': 'default',  # Use the 'default' database settings for the test database.
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [os.environ.get('REDIS_URL', 'redis://default:BMkhFaiH65F21kAIfooMnEKKkEngnJfK@viaduct.proxy.rlwy.net:22860')],
+        },
+    },
 }
+
+
+
 
 
 # Password validation
