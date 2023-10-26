@@ -18,4 +18,5 @@ class Message(models.Model):
         
     def __str__(self) -> str:
         text = self.text if self.text is not None else "-Link-"
-        return f"Conversation({self.conversation.pk})-:{self.sender}--> {text}"
+        sent_by = 'admin' if self.sent_by_admin else 'user'
+        return f"({self.user.username})-:{sent_by}--> {text}"
