@@ -5,14 +5,17 @@ from channels.generic.websocket import WebsocketConsumer
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
-from asgiref.sync import async_to_sync
 
 
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
         self.get_user(self.scope.get("headers"))
-        print(self.user)
         self.room_name = self.scope["url_route"]["kwargs"]["user_id"]
+        
+        # Reject the request if user is not staff and trying to connect to another user socket
+        if self.user.pk != self.room_name and not self.user.is_staff:
+            self.close()
+        
         self.room_group_name = f"chat_{self.room_name}"
 
         self.channel_layer.group_add(self.room_group_name, self.channel_name)
