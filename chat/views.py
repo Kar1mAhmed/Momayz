@@ -14,5 +14,5 @@ from .serializers import MessageSerializer
 def get_chat(request):
     user = request.user
     messages = Message.objects.filter(user=user)
-    serialized_data = MessageSerializer(messages)
+    serialized_data = MessageSerializer(messages, many=True)
     return Response(serialized_data.data, status=status.HTTP_200_OK)
