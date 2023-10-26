@@ -47,3 +47,4 @@ class CustomUserDetailsSerializer(UserDetailsSerializer):
     class Meta:
         model = User
         exclude = ['is_superuser', 'is_staff', 'last_login', 'date_joined', 'is_active', 'password']
+        read_only_fields = ('id', 'credits', 'notification_token')

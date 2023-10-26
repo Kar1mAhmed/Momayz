@@ -11,8 +11,10 @@ class ChatConsumer(WebsocketConsumer):
         self.user = get_user(self.scope.get("headers"))
         self.room_name = self.scope["url_route"]["kwargs"]["user_id"]
         
-        # Reject the request if user is not staff and trying to connect to another user socket
-        if str(self.user.pk) != str(self.room_name) and not self.user.is_staff:
+        # Reject the request if user isn't admin and trying to connect to another user socket
+        if str(self.user.pk) != str(self.room_name) \
+        and not self.user.is_staff \
+        and not self.user.is_superuser:
             self.close()
         
         self.room_group_name = f"chat_{self.room_name}"
@@ -38,7 +40,7 @@ class ChatConsumer(WebsocketConsumer):
         image = text_data_json.get('image')
         voice = text_data_json.get('voice')
         duration = text_data_json.get('duration')
-        sent_by_admin = True if self.user.is_staff else False
+        sent_by_admin = True if self.user.is_staff or self.user.is_superuser else False
         
         message = Message.objects.create(text=text, image=image, voice=voice,
                                 duration=duration, sent_by_admin=sent_by_admin, user=self.user)
