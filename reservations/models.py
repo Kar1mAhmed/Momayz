@@ -1,9 +1,36 @@
 from django.db import models, transaction
+from django.utils import timezone
+from django.db.models import Q
 
+import pytz
 
 from users.models import User
 from flights.models import Flight
 from flightsInfo.models import Package
+
+
+class Subscription(models.Model):
+    package = models.ForeignKey(Package, on_delete=models.PROTECT)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    started_at = models.DateField(auto_now_add=True)
+    passed_reservations = models.SmallIntegerField(default=0)
+    
+    
+    
+    def get_passed_reservations(self):
+        subscription_reservations = Reservation.objects.filter(subscription=self)
+        
+        cairo_timezone = pytz.timezone('Africa/Cairo')
+        today = timezone.now().astimezone(cairo_timezone).date()
+        current_time = timezone.now().astimezone(cairo_timezone).time()
+        
+        subscription_passed_reservation = subscription_reservations.exclude(
+        Q(flight__date=today, flight__time__lt=current_time) | Q(flight__date__lt=today))
+        
+        self.passed_reservations = subscription_passed_reservation.count()
+        return self.passed_reservations
+
+
 
 
 
@@ -12,7 +39,7 @@ class Reservation(models.Model):
     flight = models.ForeignKey(Flight, on_delete=models.PROTECT)
     reserved_at = models.DateTimeField(auto_now_add=True)
     seat_number = models.SmallIntegerField()
-    package = models.ForeignKey(Package, on_delete=models.PROTECT, null=True, blank=True)
+    subscription = models.ForeignKey(Subscription, on_delete=models.PROTECT, null=True, blank=True)
 
     
     class Meta:

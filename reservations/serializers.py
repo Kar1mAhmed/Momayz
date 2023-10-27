@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Reservation
+from .models import Reservation, Subscription
 
 class ReservationSerializer(serializers.ModelSerializer):
     move_from = serializers.CharField(source='flight.program.move_from')
@@ -13,3 +13,9 @@ class ReservationSerializer(serializers.ModelSerializer):
         exclude = ['reserved_at', 'user', 'flight']
 
 
+class SubscriptionSerializer(serializers.ModelSerializer):
+    package_name = serializers.CharField(source='package.name')
+    total_reservations = serializers.CharField(source='total_reservations')
+    class Meta:
+        model = Subscription
+        exclude = ['package', 'user', 'started_at']

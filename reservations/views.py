@@ -11,11 +11,11 @@ import pytz
 
 
 
-from .models import Reservation
+from .models import Reservation, Subscription
 from flights.models import Flight
 from flightsInfo.models import Package
 
-from .serializers import ReservationSerializer
+from .serializers import ReservationSerializer, SubscriptionSerializer
 from flights.serializers import FlightSerializer
 
 from .helpers import get_flights
@@ -36,28 +36,9 @@ def my_reservation(request):
 @permission_classes([IsAuthenticated])
 def my_package_status(request):
     user = request.user
-    cairo_timezone = pytz.timezone('Africa/Cairo')
-    today = timezone.now().astimezone(cairo_timezone).date()
-    current_time = timezone.now().astimezone(cairo_timezone).time()
-    
-    my_package_reservations = Reservation.objects.filter(user=user, package__isnull=False)
-    
-    my_package_remaining_reservations = my_package_reservations.exclude(
-    flight__date__lt=today,
-    flight__date=today,
-    flight__time__lt=current_time)
-    
-    if my_package_reservations.count() > 1:
-        package_name = my_package_reservations.first().package.name
-    else:
-        package_name = None
-    
-    return Response({
-        'package_name': package_name,
-        'total_reservations': my_package_reservations.count(),
-        'used_reservations': my_package_reservations.count() - my_package_remaining_reservations.count()},
-        status=status.HTTP_200_OK)
-    
+    subscriptions = Subscription.objects.filter(user=user).first()
+    serialized_data = SubscriptionSerializer(subscriptions)
+    return Response(serialized_data.date, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -120,6 +101,7 @@ def book_package(request):
                 last_flight = flight
                 Reservation.objects.create(user=request.user, flight=flight, package=package)
             request.user.deduct_credits(package.price)
+            Subscription.objects.create(user=request.user, package=package)
                 
     except Exception as e:
         flight_with_error = FlightSerializer(last_flight)
