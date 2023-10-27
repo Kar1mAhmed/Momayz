@@ -12,12 +12,13 @@ def create_flight(program, date):
 
 def get_next_30_dates(start_date):
     # Convert the start_date to a datetime object
-    start_date = datetime.strptime(start_date, '%Y-%m-%d')
+    date = datetime.strptime(start_date, '%Y-%m-%d')
 
     next_dates = []
 
     for _ in range(30):
-        next_dates.append(start_date.strftime('%Y-%m-%d'))
-        start_date += timedelta(days=1)
+        if date.weekday() != 4: # skip friday
+            next_dates.append(date.strftime('%Y-%m-%d'))
+        date += timedelta(days=1)
 
     return next_dates

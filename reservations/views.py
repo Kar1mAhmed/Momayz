@@ -11,7 +11,6 @@ from django.core.exceptions import ObjectDoesNotExist
 import pytz
 
 
-
 from .models import Reservation, Subscription
 from flights.models import Flight
 from flightsInfo.models import Package
@@ -20,6 +19,7 @@ from .serializers import ReservationSerializer, SubscriptionSerializer
 from flights.serializers import FlightSerializer
 
 from .helpers import get_flights
+
 
 
 class ReservationView(APIView):
@@ -34,7 +34,6 @@ class ReservationView(APIView):
         return Response(serialized_data.data, status=status.HTTP_200_OK)
 
 
-    
     def post(self, request, *args, **kwargs):
         user = request.user
         flight_id = request.data['flight_id']
@@ -73,7 +72,6 @@ class PackageView(APIView):
         return Response(serialized_data.data, status=status.HTTP_200_OK)
 
 
-    
     def post(self, request, *args, **kwargs):
         package_id = request.data['package_id']
         days = request.data['days']
