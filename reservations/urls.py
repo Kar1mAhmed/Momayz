@@ -6,5 +6,5 @@ urlpatterns = [
     path('mine/', my_reservation),
     path('edit/', edit_reservation),
     path('package/', book_package),
-    path('package-status/', my_package_status),
+    path('subscription/', my_package_status),
 ]
