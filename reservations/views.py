@@ -97,11 +97,11 @@ def book_package(request):
     last_flight = None
     try:
         with transaction.atomic():
+            subscription = Subscription.objects.create(user=request.user, package=package)
             for flight in flights:
                 last_flight = flight
-                Reservation.objects.create(user=request.user, flight=flight, package=package)
+                Reservation.objects.create(user=request.user, flight=flight, subscription=subscription)
             request.user.deduct_credits(package.price)
-            Subscription.objects.create(user=request.user, package=package)
                 
     except Exception as e:
         flight_with_error = FlightSerializer(last_flight)

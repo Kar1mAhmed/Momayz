@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.db import transaction
 
-from reservations.models import Reservation
+from reservations.models import Reservation, Subscription
 from flights.models import Flight, Program
 from users.models import User
 from locations.models import Area, Govern
@@ -61,8 +61,9 @@ class ReservationPackageTestCase(TestCase):
         
     
         with transaction.atomic():
+            subscription = Subscription.objects.create(user=self.user, package=package)
             for flight in flights:
-                Reservation.objects.create(user=self.user, flight=flight, package=package)
+                Reservation.objects.create(user=self.user, flight=flight, subscription=subscription)
             self.user.deduct_credits(package.price)
 
         self.user.refresh_from_db()
@@ -90,10 +91,11 @@ class ReservationPackageTestCase(TestCase):
         flights = Flight.objects.all()[:8]
         
         with self.assertRaises(ValueError):
+            subscription = Subscription.objects.create(user=self.user, package=package)
             with transaction.atomic():
                 self.user.deduct_credits(package.price)                
                 for flight in flights:
-                    Reservation.objects.create(user=self.user, flight=flight, package=package)
+                    Reservation.objects.create(user=self.user, flight=flight, subscription=subscription)
         
         self.assertEqual(self.user.credits, 100)        
         self.assertEqual(Reservation.objects.all().count(), 0)
@@ -124,9 +126,10 @@ class ReservationPackageTestCase(TestCase):
         full_flight.save()
         
         with self.assertRaises(ValueError):
+            subscription = Subscription.objects.create(user=self.user, package=package)
             with transaction.atomic():
                     for flight in flights:
-                        Reservation.objects.create(user=self.user, flight=flight, package=package)
+                        Reservation.objects.create(user=self.user, flight=flight, subscription=subscription)
 
         self.assertEqual(Reservation.objects.all().count(), 0)
 
