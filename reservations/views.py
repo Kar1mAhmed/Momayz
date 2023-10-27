@@ -30,6 +30,8 @@ class ReservationView(APIView):
         cairo_timezone = pytz.timezone('Africa/Cairo')
         today = timezone.now().astimezone(cairo_timezone).date()
         my_flights = Reservation.objects.filter(user=user, flight__date__gte=today)
+        
+        
         serialized_data = ReservationSerializer(my_flights, many=True)
         return Response(serialized_data.data, status=status.HTTP_200_OK)
 
@@ -67,8 +69,12 @@ class PackageView(APIView):
     
     def get(self, request, *arg, **kwargs):
         user = request.user
-        subscriptions = Subscription.objects.filter(user=user).first()
-        serialized_data = SubscriptionSerializer(subscriptions)
+        subscriptions = Subscription.objects.filter(user=user)
+        
+        if subscriptions.count() == 0:
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        
+        serialized_data = SubscriptionSerializer(subscriptions.first())
         return Response(serialized_data.data, status=status.HTTP_200_OK)
 
 
