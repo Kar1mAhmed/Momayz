@@ -40,6 +40,7 @@ def my_package_status(request):
     serialized_data = SubscriptionSerializer(subscriptions)
     return Response(serialized_data.date, status=status.HTTP_200_OK)
 
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def book_one_flight(request):
@@ -98,18 +99,31 @@ def book_package(request):
     try:
         with transaction.atomic():
             subscription = Subscription.objects.create(user=request.user, package=package)
+            
+            first_flight = None
+            last_flight = None
+
             for flight in flights:
-                last_flight = flight
                 Reservation.objects.create(user=request.user, flight=flight, subscription=subscription)
+                if not first_flight or flight.date < first_flight.date:
+                    first_flight = flight
+                if not last_flight or flight.date > last_flight.date:
+                    last_flight = flight
+            
+            subscription.first_flight_date = first_flight.date if first_flight else timezone.now().date()
+            subscription.last_flight_date = last_flight.date if last_flight else timezone.now().date()
+            subscription.save()
+
             request.user.deduct_credits(package.price)
-                
+            
+            
     except Exception as e:
         flight_with_error = FlightSerializer(last_flight)
         return Response({
                     'detail': str(e),
                     'error_at_flight': flight_with_error.data},
                     status=status.HTTP_400_BAD_REQUEST)
-        
+    
     return Response({'detail': 'Package Reserved successfully.'}, status=status.HTTP_201_CREATED)
     
 

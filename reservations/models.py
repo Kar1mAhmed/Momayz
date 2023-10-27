@@ -14,6 +14,9 @@ class Subscription(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     started_at = models.DateField(auto_now_add=True)
     passed_reservations = models.SmallIntegerField(default=0)
+    first_flight_date = models.DateField(null=True, blank=True)
+    last_flight_date = models.DateField(null=True, blank=True)
+    
     
     
     
