@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Reservation
+from .models import Reservation, Subscription
 
 class ReservationAdmin(admin.ModelAdmin):
     #readonly_fields = []
@@ -52,6 +52,8 @@ class ReservationAdmin(admin.ModelAdmin):
         return obj.flight.time
     flight_time.short_description = 'Time'
     
-    
+class SubscriptionAdmin(admin.ModelAdmin):
+    list_display = ['user', 'package', 'started_at', 'passed_reservations']
     
 admin.site.register(Reservation, ReservationAdmin)
+admin.site.register(Subscription, SubscriptionAdmin)
