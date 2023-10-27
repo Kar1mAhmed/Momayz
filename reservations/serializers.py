@@ -15,7 +15,7 @@ class ReservationSerializer(serializers.ModelSerializer):
 
 class SubscriptionSerializer(serializers.ModelSerializer):
     package_name = serializers.CharField(source='package.name')
-    total_reservations = serializers.CharField(source='total_reservations')
+    total_reservations = serializers.CharField(source='package.num_of_flights')
     class Meta:
         model = Subscription
         exclude = ['package', 'user', 'started_at']
