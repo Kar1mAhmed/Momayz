@@ -16,7 +16,7 @@ def get_next_30_dates(start_date):
 
     next_dates = []
 
-    for _ in range(40):
+    for _ in range(31):
         if date.weekday() != 4: # skip friday
             next_dates.append(date.strftime('%Y-%m-%d'))
         date += timedelta(days=1)
