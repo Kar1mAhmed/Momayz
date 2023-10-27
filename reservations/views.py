@@ -38,7 +38,7 @@ def my_package_status(request):
     user = request.user
     subscriptions = Subscription.objects.filter(user=user).first()
     serialized_data = SubscriptionSerializer(subscriptions)
-    return Response(serialized_data.date, status=status.HTTP_200_OK)
+    return Response(serialized_data.data, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
