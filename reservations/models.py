@@ -66,8 +66,8 @@ class Reservation(models.Model):
         try:
             with transaction.atomic():
                 self.flight.decrement_taken_seats()
-                if self.package:
-                    credits_to_refund = self.package.price / self.package.num_of_flights
+                if self.subscription:
+                    credits_to_refund = self.subscription.package.price / self.subscription.package.num_of_flights
                     self.user.refund_credits(credits_to_refund)
                 else:
                     credits_to_refund = self.flight.program.price
@@ -128,7 +128,7 @@ class Reservation(models.Model):
         
         
     def _handel_credits(self):
-        if not self.package:
+        if not self.subscription:
             try:
                 self.user.deduct_credits(self.flight.program.price)
                 return True
