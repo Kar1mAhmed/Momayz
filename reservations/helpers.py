@@ -3,6 +3,16 @@ from datetime import datetime, timedelta
 from flights.models import Flight
 
 
+def delete_old_flights(passed_days):
+    
+    old_flights = Flight.objects.filter(date)
+
+
+
+
+
+
+
 def get_flights(days, user):
     '''
         the idea to get the flights of the days user picked and reserve it for 4 weeks ahead.

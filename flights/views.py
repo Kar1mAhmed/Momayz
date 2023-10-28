@@ -24,7 +24,8 @@ def today_flights(request):
     user = request.user 
     city = user.city
     
-    current_date = date.today()
+    cairo_timezone = pytz.timezone('Africa/Cairo')
+    current_date = timezone.now().astimezone(cairo_timezone).date()
     #current_time = timezone.now().time()
     
     
@@ -48,7 +49,8 @@ def tomorrow_flights(request):
     user = request.user 
     city = user.city
     
-    current_date = date.today() + timedelta(days=1)
+    cairo_timezone = pytz.timezone('Africa/Cairo')
+    current_date = timezone.now().astimezone(cairo_timezone).date() + timedelta(days=1)
 
     flights = Flight.objects.filter(
     Q(program__move_from=city) | Q(program__move_to=city), 
