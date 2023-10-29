@@ -8,7 +8,7 @@ from django.db.models import Q
 from django.utils import timezone
 
 
-from datetime import date, timedelta
+from datetime import  timedelta
 import pytz
 
 

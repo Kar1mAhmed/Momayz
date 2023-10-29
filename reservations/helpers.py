@@ -1,13 +1,22 @@
+from flights.models import Flight, Program
+from .models import Reservation
+
+from django.utils import timezone
 from datetime import datetime, timedelta
+import pytz
 
-from flights.models import Flight
 
 
-def delete_old_flights(passed_days):
     
-    old_flights = Flight.objects.filter(date)
+    
 
+def delete_old_reservations(passed_days=1):
+    cairo_timezone = pytz.timezone('Africa/Cairo')
+    current_date = timezone.now().astimezone(cairo_timezone).date()
+    deletion_date = current_date - timedelta(days=passed_days)
 
+    # Delete old flights
+    Reservation.objects.filter(flight__date__lt=deletion_date).delete()
 
 
 

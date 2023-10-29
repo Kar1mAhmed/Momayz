@@ -18,7 +18,7 @@ SECRET_KEY = 'django-insecure-1rcgs+lmoj0ox!#g^5rf9--aw)i&7%i#wtf+nvt&pa(96i9f)&
 
 
 TIME_ZONE = 'Africa/Cairo'
-#USE_TZ = True
+USE_TZ = False
 
 DEBUG = True
 
@@ -30,9 +30,9 @@ AUTH_USER_MODEL = 'users.User'
 
 INSTALLED_APPS = [
     
-    "daphne",
-    "channels",  
-
+    'daphne',
+    'channels',  
+    'celery',
     
     'django.contrib.admin',
     'django.contrib.auth',
@@ -114,6 +114,8 @@ DATABASES = {
     },
 }
 
+REDIS_URL = 'redis://default:BMkhFaiH65F21kAIfooMnEKKkEngnJfK@viaduct.proxy.rlwy.net:22860'
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
@@ -125,6 +127,10 @@ CHANNEL_LAYERS = {
 
 
 
+CELERY_BROKER_URL = REDIS_URL
+CELERY_RESULT_BACKEND = REDIS_URL
+CELERY_TIMEZONE = "Africa/Cairo"
+CELERY_ENABLE_UTC = False
 
 
 # Password validation
