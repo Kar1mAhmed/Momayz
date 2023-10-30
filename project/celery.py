@@ -17,7 +17,7 @@ app.config_from_object(settings, namespace='CELERY')
 app.conf.beat_schedule = {
     'run_at_midnight': {
         'task': 'settings.tasks.test_func',
-        'schedule': crontab(hour=21, minute=58),
+        'schedule': crontab(hour=22, minute=0),
         # 'args': (1, 1)
     },
 }
