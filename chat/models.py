@@ -2,7 +2,6 @@ from django.db import models
 from users.models import User
 
 
-
 class Message(models.Model):
     sent_by_admin = models.BooleanField()
     user = models.ForeignKey(User, on_delete=models.CASCADE, db_index=True)

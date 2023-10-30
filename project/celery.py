@@ -16,11 +16,14 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 
 app.conf.beat_schedule = {
     'run_at_midnight': {
-        'task': 'tasks.midnight.midnight_call',
-        'schedule': crontab(hour=2, minute=30),
+        'task': 'settings.tasks.midnight_call',
+        'schedule': crontab(hour=13, minute=26),
         'args': (1, 1)
     },
 }
 
-# Load task modules from all registered Django app configs. 
-# app.autodiscover_tasks() 
+app.autodiscover_tasks()
+
+@app.task(bind=True)
+def debug_task(self):
+    print(f'Request: {self.request!r}')
