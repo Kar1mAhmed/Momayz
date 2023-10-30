@@ -17,7 +17,7 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.conf.beat_schedule = {
     'run_at_midnight': {
         'task': 'settings.tasks.midnight_call',
-        'schedule': crontab(hour=13, minute=26),
+        'schedule': crontab(hour=14, minute=30),
         'args': (1, 1)
     },
 }
