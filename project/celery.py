@@ -1,24 +1,24 @@
-import os 
-from celery import Celery 
+from __future__ import absolute_import, unicode_literals
+import os
+
+from celery import Celery
+from django.conf import settings
 from celery.schedules import crontab
 
-# set the default Django settings module for the 'celery' program. 
-os.environ.setdefault ('DJANGO_SETTINGS_MODULE', 'project.settings') 
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings')
 
-app = Celery('project') 
+app = Celery('project')
+app.conf.enable_utc = False
 
-# Using a string here means the worker doesn't 
-# have to serialize the configuration object to 
-# child processes. - namespace='CELERY' means all 
-# celery-related configuration keys should 
-# have a `CELERY_` prefix. 
-app.config_from_object('django.conf:settings', namespace='CELERY') 
+app.conf.update(timezone = 'Africa/Cairo')
+
+app.config_from_object(settings, namespace='CELERY')
 
 app.conf.beat_schedule = {
     'run_at_midnight': {
-        'task': 'settings.tasks.midnight_call',
-        'schedule': crontab(hour=14, minute=30),
-        'args': (1, 1)
+        'task': 'settings.tasks.test_func',
+        'schedule': crontab(hour=21, minute=58),
+        # 'args': (1, 1)
     },
 }
 

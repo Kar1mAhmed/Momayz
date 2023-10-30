@@ -7,7 +7,8 @@ from .models import Message
 from .serializers import MessageSerializer
 
 
-
+from settings.tasks import test_func
+from django.http.response import HttpResponse
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])  
@@ -16,3 +17,10 @@ def get_chat(request):
     messages = Message.objects.filter(user=user)
     serialized_data = MessageSerializer(messages, many=True)
     return Response(serialized_data.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def test(request):
+    test_func.delay()
+    return HttpResponse("done")
+
