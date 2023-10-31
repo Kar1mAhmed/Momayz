@@ -1,0 +1,2 @@
+celery -A project.celery worker --pool=solo -l info
+celery -A project.celery beat -l info
