@@ -17,7 +17,7 @@ app.config_from_object(settings, namespace='CELERY')
 app.conf.beat_schedule = {
     'donkey_run': {
         'task': 'settings.tasks.test_func',
-        'schedule': crontab(hour=13, minute=53),
+        'schedule': crontab(hour=15, minute=55),
         # 'args': (1, 1)
     },
 }

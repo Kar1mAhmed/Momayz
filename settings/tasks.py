@@ -16,4 +16,5 @@ def midnight_call(self, reservation_days, flights_days):
 
 @shared_task(bind=True)
 def test_func(self):
-    QA.objects.create(A='test', Q='tot')
+    QA.objects.create(A='DoIT', Q='Please')
+    print("DO " * 10)
