@@ -1,1 +1,1 @@
-web:daphne -b 0.0.0.0 -p $PORT project.asgi:applicationc & celery -A project worker --pool=solo -l INFO & celery -A project beat -l INFO
+web:daphne project.asgi:application --port $PORT --bind 0.0.0.0 -v2 & celery -A project worker --pool=solo -l INFO & celery -A project beat -l INFO
