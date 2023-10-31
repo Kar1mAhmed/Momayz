@@ -15,9 +15,9 @@ app.conf.update(timezone = 'Africa/Cairo')
 app.config_from_object(settings, namespace='CELERY')
 
 app.conf.beat_schedule = {
-    'run_at_midnight': {
+    'donkey_run': {
         'task': 'settings.tasks.test_func',
-        'schedule': crontab(hour=22, minute=12),
+        'schedule': crontab(hour=13, minute=53),
         # 'args': (1, 1)
     },
 }
