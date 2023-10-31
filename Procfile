@@ -1,1 +1,1 @@
-web: celery -A project worker --pool=solo -l INFO & celery -A project beat -l INFO && && daphne -b 0.0.0.0 -p $PORT project.asgi:application
+web: celery -A project worker --pool=solo -l INFO & celery -A project beat -l INFO && daphne -b 0.0.0.0 -p $PORT project.asgi:application
