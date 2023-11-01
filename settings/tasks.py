@@ -27,15 +27,15 @@ def midnight_call(self, reservation_days=1, flights_days=1):
 
 @shared_task(bind=True)
 def notify_before_30min(self):
-    cairo_timezone = pytz.timezone('Africa/Cairo')
-    today_date = timezone.now().astimezone(cairo_timezone).date()
-    Flights = Flight.objects.filter(date=today_date)
+    print("DOGYYYYYYY STYLEEEE")
+    # cairo_timezone = pytz.timezone('Africa/Cairo')
+    # today_date = timezone.now().astimezone(cairo_timezone).date()
+    # Flights = Flight.objects.filter(date=today_date)
     
-    current_time =  timezone.now().astimezone(cairo_timezone).time()
-    time_in_30_minutes = current_time + timedelta(minutes=35)
+    # current_time =  timezone.now().astimezone(cairo_timezone).time()
+    # time_in_30_minutes = current_time + timedelta(minutes=35)
 
-    for flight in Flights:
-        #if flight.time < time_in_30_minutes and not flight.notified:
-            notify_flight(flight.pk)
-            # flight.notified = True
-            # flight.save()
+    #     #if flight.time < time_in_30_minutes and not flight.notified:
+    # notify_flight(1626)
+    #         # flight.notified = True
+    #         # flight.save()
