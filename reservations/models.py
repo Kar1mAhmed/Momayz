@@ -11,7 +11,7 @@ from flightsInfo.models import Package
 
 class Subscription(models.Model):
     package = models.ForeignKey(Package, on_delete=models.PROTECT)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, db_index=True)
     started_at = models.DateField(auto_now_add=True)
     passed_reservations = models.SmallIntegerField(default=0)
     first_flight_date = models.DateField(null=True, blank=True)
@@ -31,6 +31,7 @@ class Subscription(models.Model):
         Q(flight__date=today, flight__time__lt=current_time) | Q(flight__date__lt=today))
         
         self.passed_reservations = subscription_passed_reservation.count()
+        self.save()
         return self.passed_reservations
 
 
@@ -38,11 +39,11 @@ class Subscription(models.Model):
 
 
 class Reservation(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    flight = models.ForeignKey(Flight, on_delete=models.PROTECT)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, db_index=True)
+    flight = models.ForeignKey(Flight, on_delete=models.PROTECT, db_index=True)
     reserved_at = models.DateTimeField(auto_now_add=True)
     seat_number = models.SmallIntegerField()
-    subscription = models.ForeignKey(Subscription, on_delete=models.PROTECT, null=True, blank=True)
+    subscription = models.ForeignKey(Subscription, on_delete=models.PROTECT, null=True, blank=True, db_index=True)
 
     
     class Meta:

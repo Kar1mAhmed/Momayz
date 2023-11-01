@@ -16,6 +16,15 @@ def create_flight(program, date):
         new_flight = Flight.objects.create(program=program, date=date, time=appointment.time)
         new_flight.save()
 
+def create_flights_all_programs(date):
+    programs = Program.objects.all()
+
+    for program in programs:
+        flights = Flight.objects.filter(program=program, date=date)
+        if not flights.exists():
+            create_flight(program=program, date=date)
+
+
 
 def delete_old_flights(passed_days=1):
     cairo_timezone = pytz.timezone('Africa/Cairo')

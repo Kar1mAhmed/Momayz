@@ -12,10 +12,8 @@ from datetime import  timedelta
 import pytz
 
 
-from .models import Flight, Program
+from .models import Flight
 from .serializers import FlightSerializer
-
-from .helpers import create_flight, get_next_30_dates
 
 
 @api_view(['GET'])
@@ -67,7 +65,6 @@ def tomorrow_flights(request):
 @permission_classes([IsAuthenticated])
 def flights_by_date(request):
     user = request.user 
-    city = user.city
     
     date = request.GET.get('date')
     move_from = request.GET.get('move_from')
@@ -86,34 +83,6 @@ def flights_by_date(request):
 
 
 
-
-
-
-@api_view(['POST'])
-def add_flight(request):
-    flight_id = request.data['pk']
-    date = request.data['date']
-    
-    program = Program.objects.get(pk=flight_id)
-    create_flight(program=program, date=date)
-    return Response({"detail": "flight Created"}, status=status.HTTP_200_OK)
-
-
-@api_view(['POST'])
-def add_flight_for_next_month(request):
-    program_id = request.data['pk']
-    
-    program = Program.objects.get(pk=program_id)
-    cairo_timezone = pytz.timezone('Africa/Cairo')
-    today_date = timezone.now().astimezone(cairo_timezone).date()
-    dates = get_next_30_dates(str(today_date))
-    
-    for date in dates:
-        flights = Flight.objects.filter(program=program, date=date)
-        if not flights.exists():
-            create_flight(program=program, date=date)
-            
-    return Response({"detail": "flights Created"}, status=status.HTTP_200_OK)
 
 
 

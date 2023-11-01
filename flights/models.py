@@ -32,6 +32,7 @@ class Flight(models.Model):
     taken_seats = models.SmallIntegerField(default=0, validators=[MinValueValidator(0)])
     total_seats = models.SmallIntegerField(default=0, validators=[MinValueValidator(0)])
     canceled  = models.BooleanField(default=False)
+    notified = models.BooleanField(default=False)
     
     class Meta:
         unique_together = ('time', 'program', 'date')
