@@ -128,15 +128,15 @@ CHANNEL_LAYERS = {
 
 
 
-CELERY_BROKER_URL = REDIS_URL
-CELERY_RESULT_BACKEND = 'django-db'
-CELERY_TIMEZONE = "Africa/Cairo"
-CELERY_ENABLE_UTC = False
-CELERY_ACCEPT_CONTENT = ['application/json']
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TASK_SERIALIZER = 'json'
+CELERY_broker_url = REDIS_URL
+result_backend = 'django-db'
+timezone = "Africa/Cairo"
+CELERY_enable_utc = False
+accept_content = ['application/json']
+result_serializer = 'json'
+task_serializer = 'json'
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
-CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True 
+CELERY_broker_connection_retry_on_startup = True 
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
