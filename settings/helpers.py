@@ -46,11 +46,11 @@ def send_notification(to, notification_body):
     # Send the POST request to FCM
     response = requests.post(fcm_url, json=payload, headers=headers)
 
-    # Check the response
-    if response.status_code == 200:
-        print("Notification sent successfully.")
-    else:
-        print("Failed to send notification. Status code:", response.status_code)
-        print("Response content:", response.content)
+    # # Check the response
+    # if response.status_code == 200:
+    #     print("Notification sent successfully.")
+    # else:
+    #     print("Failed to send notification. Status code:", response.status_code)
+    #     print("Response content:", response.content)
         
         

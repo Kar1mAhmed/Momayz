@@ -31,12 +31,11 @@ def notify_before_30min(self):
     today_date = timezone.now().astimezone(cairo_timezone).date()
     Flights = Flight.objects.filter(date=today_date)
     
-    cairo_timezone = pytz.timezone('Africa/Cairo')
     current_time =  timezone.now().astimezone(cairo_timezone).time()
-    time_in_30_minutes = current_time + timedelta(minutes=30)
+    time_in_30_minutes = current_time + timedelta(minutes=35)
 
     for flight in Flights:
-        if flight.time < time_in_30_minutes and not flight.notified:
+        #if flight.time < time_in_30_minutes and not flight.notified:
             notify_flight(flight.pk)
-            flight.notified = True
-            flight.save()
+            # flight.notified = True
+            # flight.save()
