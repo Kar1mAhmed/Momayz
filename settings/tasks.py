@@ -32,7 +32,7 @@ def notify_before_30min(self):
     # today_date = timezone.now().astimezone(cairo_timezone).date()
     # Flights = Flight.objects.filter(date=today_date)
     
-    current_time =  timezone.now().astimezone(cairo_timezone).time()
+    # current_time =  timezone.now().astimezone(cairo_timezone).time()
     # time_in_30_minutes = current_time + timedelta(minutes=35)
 
         #if flight.time < time_in_30_minutes and not flight.notified:
