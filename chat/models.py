@@ -8,7 +8,6 @@ class Message(models.Model):
     text = models.CharField(max_length=1000, blank=True, null=True)
     image = models.URLField(blank=True, null=True)
     voice = models.URLField(blank=True, null=True)
-    duration = models.SmallIntegerField(null=True, blank=True)
     time = models.DateTimeField(auto_now_add=True)
     
     

@@ -16,8 +16,8 @@ app.config_from_object(settings, namespace='CELERY')
 
 app.conf.beat_schedule = {
     'test': {
-        'task': 'settings.tasks.notify_before_30min',
-        'schedule': crontab(minute='*/1')
+        'task': 'settings.tasks.midnight_call',
+        'schedule': crontab(minute=20, hour=17)
     },
     
     # 'flight_notification': {
