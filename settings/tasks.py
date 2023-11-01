@@ -36,6 +36,6 @@ def notify_before_30min(self):
     # time_in_30_minutes = current_time + timedelta(minutes=35)
 
         #if flight.time < time_in_30_minutes and not flight.notified:
-    notify_flight(1626)
+    # notify_flight(1626)
             # flight.notified = True
             # flight.save()
