@@ -22,7 +22,7 @@ app.conf.beat_schedule = {
     
     'flight_notification': {
         'task': 'settings.tasks.notify_before_30min',
-        'schedule': crontab(hour=13, minute=25)
+        'schedule': crontab(hour='6-18', minute='*/30')
     },
 }
 

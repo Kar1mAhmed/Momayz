@@ -13,7 +13,7 @@ class Program(models.Model):
     move_to = models.ForeignKey(Area, on_delete=models.PROTECT, related_name="move_to")
     move_at = models.ManyToManyField(Appointments)
     bus = models.ForeignKey(Bus, on_delete=models.PROTECT)
-    duration = models.CharField(max_length=8)
+    duration = models.DurationField(default="00:00:00")
     price = models.DecimalField(max_digits=8, decimal_places=2)
     
     class Meta:
