@@ -4,18 +4,23 @@ import json
 
 from .models import Message
 from .serializers import MessageSerializer
-from .helpers import get_user, send_message_to_admin
+from .helpers import get_user_from_token, send_message_to_admin
+
+from users.models import User
 
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
-        self.user = get_user(self.scope.get("headers"))
-        self.room_name = self.scope["url_route"]["kwargs"]["user_id"]
+        # self.user = get_user_from_token(self.scope["url_route"]["kwargs"]["token"])
         
-        # Reject the request if user isn't admin and trying to connect to another user socket
-        if str(self.user.pk) != str(self.room_name) \
-        and not self.user.is_staff \
-        and not self.user.is_superuser:
-            self.close()
+        user_id = self.scope["url_route"]["kwargs"]["user_id"]
+        self.user = User.objects.get(pk=user_id)
+        self.room_name = user_id
+        
+        # # Reject the request if user isn't admin and trying to connect to another user socket
+        # if str(self.user.pk) != str(self.room_name) \
+        # and not self.user.is_staff \
+        # and not self.user.is_superuser:
+        #     self.close()
         
         self.room_group_name = f"chat_{self.room_name}"
 
@@ -30,7 +35,6 @@ class ChatConsumer(WebsocketConsumer):
         text_data_json = json.loads(text_data)
         message = self.save_message(text_data_json)
         self.send(text_data=json.dumps({"message": message}))
-        
         # send the message to admin socket
         send_message_to_admin(message)
         
@@ -50,12 +54,13 @@ class ChatConsumer(WebsocketConsumer):
 
 class AdminChatConsumer(WebsocketConsumer):
     def connect(self):
-        self.user = get_user(self.scope.get("headers"))
+
+        # self.user = get_user_from_token(self.scope["url_route"]["kwargs"]["token"])
         self.room_name = 'admin'
         
-        # Reject the request if user not admin
-        if not self.user.is_superuser and not self.user.is_staff:
-            self.close()
+        # # Reject the request if user not admin
+        # if not self.user.is_superuser and not self.user.is_staff:
+        #     self.close()
         
         self.room_group_name = f"chat_{self.room_name}"
 
