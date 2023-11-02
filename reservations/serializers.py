@@ -1,16 +1,24 @@
 from rest_framework import serializers
 from .models import Reservation, Subscription
 
+from datetime import datetime
+
+
 class ReservationSerializer(serializers.ModelSerializer):
     move_from = serializers.CharField(source='flight.program.move_from')
     move_to = serializers.CharField(source='flight.program.move_to')
-    duration = serializers.CharField(source='flight.program.duration')
     date = serializers.CharField(source='flight.date')
     price = serializers.CharField(source='flight.program.price')
     time = serializers.CharField(source='flight.time')
+    arrive_at = serializers.SerializerMethodField()
+
     class Meta:
         model = Reservation
         exclude = ['reserved_at', 'user', 'flight']
+        
+    def get_arrive_at(self, obj):
+        time_as_datetime = datetime.combine(datetime.min, obj.flight.time)
+        return (time_as_datetime + obj.flight.program.duration).time()
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
