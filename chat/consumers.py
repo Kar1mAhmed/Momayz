@@ -34,6 +34,8 @@ class ChatConsumer(WebsocketConsumer):
     def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = self.save_message(text_data_json)
+        if not message:
+            return 
         self.send(text_data=json.dumps({"message": message}))
         # send the message to admin socket
         send_message_to_admin(message)
@@ -44,6 +46,9 @@ class ChatConsumer(WebsocketConsumer):
         image = text_data_json.get('image')
         voice = text_data_json.get('voice')
         sent_by_admin = True if self.user.is_staff or self.user.is_superuser else False
+        
+        if not text and not voice and not image:
+            return False
         
         message = Message.objects.create(text=text, image=image, voice=voice,
                                             sent_by_admin=sent_by_admin, user=self.user)
