@@ -11,6 +11,7 @@ class FlightAdmin(admin.ModelAdmin):
     
     
     
+    
     def get_search_results(self, request, queryset, search_term):
         lookup = (
             Q(program__move_from__name__icontains=search_term) |
