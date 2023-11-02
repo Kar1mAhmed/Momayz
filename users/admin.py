@@ -3,6 +3,10 @@ from .models import User
 
 class UserAdmin(admin.ModelAdmin):
     list_display = ['username', 'name', 'city', 'govern', 'credits']
+    search_fields = ['username', 'name'] 
+    list_filter = ['city', 'govern']
+
+
     
     def govern(self, obj):
         if obj.city:
