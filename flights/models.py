@@ -15,6 +15,7 @@ class Program(models.Model):
     bus = models.ForeignKey(Bus, on_delete=models.PROTECT)
     duration = models.DurationField(default="00:00:00")
     price = models.DecimalField(max_digits=8, decimal_places=2)
+    auto_create = models.BooleanField(default=True)
     
     class Meta:
         unique_together = ('move_from', 'move_to')

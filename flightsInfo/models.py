@@ -20,13 +20,27 @@ class Bus(models.Model):
         return f"{self.name}({self.seats})"
 
 
+class Day(models.Model):
+    DAY_CHOICES = [
+        ('Monday', 'Monday'),
+        ('Tuesday', 'Tuesday'),
+        ('Wednesday', 'Wednesday'),
+        ('Thursday', 'Thursday'),
+        ('Friday', 'Friday'),
+        ('Saturday', 'Saturday'),
+        ('Sunday', 'Sunday'),
+    ]
+    name = models.CharField(max_length=20, choices=DAY_CHOICES, unique=True)
+    
+    def __str__(self):
+        return f"{self.name}"
 
 
 class Appointments(models.Model):
     time = models.TimeField()
-    
+    day = models.ForeignKey(Day, on_delete=models.PROTECT)
     class Meta:
-        ordering = ['time']
+        ordering = ['day', 'time']
 
     def __str__(self):
-        return self.time.strftime('%I:%M %p')  # This formats the time as 12-hour with AM/PM
+        return f"{self.day}({self.time.strftime('%I:%M %p')})"  # This formats the time as 12-hour with AM/PM
