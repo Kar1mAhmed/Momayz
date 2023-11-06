@@ -7,7 +7,7 @@ class Package(models.Model):
     price = models.DecimalField(max_digits=8, decimal_places=2)
     num_of_flights = models.SmallIntegerField()
     name = models.CharField(max_length=30)
-    city = models.CharField(Area)
+    city = models.ForeignKey(Area, on_delete=models.CASCADE)
     
     def __str__(self) -> str:
         return self.name
