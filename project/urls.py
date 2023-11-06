@@ -6,7 +6,7 @@ urlpatterns = [
     path('users/', include('users.urls')),
     path('locations/', include('locations.urls')),
     path('otp/', include('otp.urls')),
-    path('QA/', include('QA.urls')),
+    path('settings/', include('settings.urls')),
     path('flights/', include('flights.urls')),
     path('reservation/', include('reservations.urls')),
     path('chat/', include('chat.urls')),

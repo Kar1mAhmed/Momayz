@@ -56,7 +56,6 @@ INSTALLED_APPS = [
     'users',
     'locations',
     'otp',
-    'QA',
     'flights',
     'flightsInfo',
     'reservations',
