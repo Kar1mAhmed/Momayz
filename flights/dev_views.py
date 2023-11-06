@@ -8,6 +8,7 @@ from datetime import  timedelta
 import pytz
 
 from .models import Flight, Program
+from flightsInfo.models import Appointments, Day
 
 from .helpers import create_flight, get_next_30_dates, create_flights_all_programs
 from settings.helpers import notify_flight
@@ -43,10 +44,20 @@ def add_flight_for_next_month(request):
 
 @api_view(['POST'])
 def test_not(request):
-    flight_id = request.data['flight_id']
-    notify_flight(flight_id)
-    return Response({"detail": "notification sent"}, status=status.HTTP_200_OK)
+    times = ['07:00:00', '08:00:00', '09:30:00', '10:30:00', '12:00:00', '13:30:00', '15:00:00', '16:30:00']
 
+    # Get the list of days
+    days = Day.objects.all()
+
+    # Create appointments for each day and time combination
+    for day in days:
+        for time in times:
+            appointment = Appointments.create(day=day, time=time)
+            appointment.save()
+            
+    return Response({'detail': 'Dogy'}, status=status.HTTP_201_CREATED)
+            
+            
 @api_view(['POST'])
 def create_all_programs_30(request):
     cairo_timezone = pytz.timezone('Africa/Cairo')
