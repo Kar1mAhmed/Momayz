@@ -1,14 +1,19 @@
 from django.db import models
 
+from locations.models import Area
 
 
 class Package(models.Model):
     price = models.DecimalField(max_digits=8, decimal_places=2)
     num_of_flights = models.SmallIntegerField()
     name = models.CharField(max_length=30)
+    city = models.CharField(Area)
     
     def __str__(self) -> str:
         return self.name
+    
+    class Meta:
+        unique_together = ('name', 'city')
 
 
 
@@ -18,6 +23,9 @@ class Bus(models.Model):
     
     def __str__(self) -> str:
         return f"{self.name}({self.seats})"
+    
+    
+
 
 
 class Day(models.Model):
