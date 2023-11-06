@@ -34,7 +34,7 @@ class FlightAdmin(admin.ModelAdmin):
     
     
 class ProgramAdmin(admin.ModelAdmin):
-    list_display = ['id', 'move_from', 'move_to', 'bus', 'duration','price']
+    list_display = ['move_from', 'move_to', 'bus', 'duration','price']
     
 
 

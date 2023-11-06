@@ -73,7 +73,7 @@ def test_not(request):
     
     appointments_return = []
     for day in days:
-        for time in times_go:
+        for time in times_return:
             appointments_return.append(Appointments.objects.get(time=time, day=day))
     for city in cities:
         program = Program.objects.create(
