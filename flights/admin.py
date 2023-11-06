@@ -34,15 +34,8 @@ class FlightAdmin(admin.ModelAdmin):
     
     
 class ProgramAdmin(admin.ModelAdmin):
-    list_display = ['id', 'move_from', 'move_to', 'bus', 'duration', 'get_move_at', 'price']
+    list_display = ['id', 'move_from', 'move_to', 'bus', 'duration','price']
     
-    def get_move_at(self, obj):
-        appointments = obj.move_at.all()
-        if appointments:
-            return ", ".join([appointment.time.strftime('%I:%M %p') for appointment in appointments])
-        else:
-            return ""
-    get_move_at.short_description = 'Move At'
 
 
 admin.site.register(Flight, FlightAdmin)

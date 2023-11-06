@@ -8,7 +8,8 @@ from datetime import  timedelta
 import pytz
 
 from .models import Flight, Program
-from flightsInfo.models import Appointments, Day
+from flightsInfo.models import Appointments, Day, Bus
+from locations.models import Area, Govern
 
 from .helpers import create_flight, get_next_30_dates, create_flights_all_programs
 from settings.helpers import notify_flight
@@ -44,15 +45,47 @@ def add_flight_for_next_month(request):
 
 @api_view(['POST'])
 def test_not(request):
-    times = ['07:00:00', '08:00:00', '09:30:00', '10:30:00', '12:00:00', '13:30:00', '15:00:00', '16:30:00']
+    times_go = ['07:00:00', '08:00:00', '09:30:00', '10:30:00']
+    times_return = ['12:00:00', '13:30:00', '15:00:00', '16:30:00']
+    days = Day.objects.all().exclude(name='Friday')
 
-    # Get the list of days
-    days = Day.objects.all()
-
-    # Create appointments for each day and time combination
+    cities = Area.objects.filter(city=True)
+    collage = Area.objects.filter(city=False).first()
+    asyt = Govern.objects.all().first()
+    bus = Bus.objects.all().first()
+    
+    appointments_go = []
     for day in days:
-        for time in times:
-            appointment = Appointments.objects.create(day=day, time=time)
+        for time in times_go:
+            appointments_go.append(Appointments.objects.get(time=time, day=day))
+            
+    for city in cities:
+        program = Program.objects.create(
+            govern=asyt,
+            move_from=city,
+            move_to=collage,
+            bus=bus,
+            duration="00:30:00",
+            price=25
+        )
+        program.move_at.set(appointments_go)  # Set the many-to-many relationship
+
+    
+    appointments_return = []
+    for day in days:
+        for time in times_go:
+            appointments_return.append(Appointments.objects.get(time=time, day=day))
+    for city in cities:
+        program = Program.objects.create(
+            govern=asyt,
+            move_from=collage,
+            move_to=city,
+            bus=bus,
+            duration="00:30:00",
+            price=25
+        )
+        program.move_at.set(appointments_return)  # Set the many-to-many relationship
+    
             
     return Response({'detail': 'Dogy'}, status=status.HTTP_201_CREATED)
             
