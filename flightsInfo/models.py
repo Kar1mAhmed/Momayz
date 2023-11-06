@@ -41,6 +41,8 @@ class Appointments(models.Model):
     day = models.ForeignKey(Day, on_delete=models.PROTECT)
     class Meta:
         ordering = ['day', 'time']
+        unique_together = ('time', 'day')
+
 
     def __str__(self):
         return f"{self.day}({self.time.strftime('%I:%M %p')})"  # This formats the time as 12-hour with AM/PM

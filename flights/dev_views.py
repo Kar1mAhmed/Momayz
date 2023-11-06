@@ -52,8 +52,7 @@ def test_not(request):
     # Create appointments for each day and time combination
     for day in days:
         for time in times:
-            appointment = Appointments.create(day=day, time=time)
-            appointment.save()
+            appointment = Appointments.objects.create(day=day, time=time)
             
     return Response({'detail': 'Dogy'}, status=status.HTTP_201_CREATED)
             
