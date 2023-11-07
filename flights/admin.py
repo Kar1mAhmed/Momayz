@@ -35,6 +35,7 @@ class FlightAdmin(admin.ModelAdmin):
     
 class ProgramAdmin(admin.ModelAdmin):
     list_display = ['move_from', 'move_to', 'bus', 'duration','price']
+    readonly_fields = ['move_from', 'move_to']
     
 
 

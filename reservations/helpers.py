@@ -6,10 +6,6 @@ from datetime import datetime, timedelta
 import pytz
 
 
-
-    
-    
-
 def delete_old_reservations(passed_days=1):
     cairo_timezone = pytz.timezone('Africa/Cairo')
     current_date = timezone.now().astimezone(cairo_timezone).date()
