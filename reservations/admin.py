@@ -3,12 +3,12 @@ from django.contrib import admin
 from .models import Reservation, Subscription
 
 class ReservationAdmin(admin.ModelAdmin):
-    readonly_fields = ['seat_number']
+    readonly_fields = ['seat_number', 'subscription']
     list_display = ['user_name', 'user_username', 'flight_move_from',
                     'flight_move_to', 'flight_date', 'flight_time']
     search_fields = ["flight__program__move_from__name", "flight__program__move_to__name", "flight__date", "flight__time"] 
     list_filter = ["flight__program__move_from", "flight__program__move_to",  "flight__time", 'flight__date', 'flight__program__price']
-
+    autocomplete_fields = ('user',)
 
 
     actions = ['immediate_delete']
