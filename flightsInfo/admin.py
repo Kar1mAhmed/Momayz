@@ -8,7 +8,7 @@ class BusAdmin(admin.ModelAdmin):
     list_display = [field.name for field in Bus._meta.fields]
     
 class PackageAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in Package._meta.fields]
+    list_display = ['city', 'name', 'num_of_flights', 'price']
 
 
 admin.site.register(Bus, BusAdmin)

@@ -8,7 +8,7 @@ from datetime import  timedelta
 import pytz
 
 from .models import Flight, Program
-from flightsInfo.models import Appointments, Day, Bus
+from flightsInfo.models import Appointments, Day, Bus, Package
 from locations.models import Area, Govern
 
 from .helpers import create_flight, get_next_30_dates, create_flights_all_programs
@@ -40,6 +40,18 @@ def add_flight_for_next_month(request):
             create_flight(program=program, date=date)
             
     return Response({"detail": "flights Created"}, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def do(request):
+    cites = Area.objects.filter(city=True)
+    
+    for city in cites:
+        Package.objects.create(city=city, num_of_flights=16, price=290, name='اشتراك الحضور')
+        Package.objects.create(city=city, num_of_flights=32, price=580, name='اشتراك المواظبة')
+        Package.objects.create(city=city, num_of_flights=48, price=860, name='الاشتراك المميز')
+        
+    return Response({"detail": "flights Created"}, status=status.HTTP_200_OK)
+
 
 
 
@@ -84,7 +96,7 @@ def test_not(request):
             duration="00:30:00",
             price=25
         )
-        program.move_at.set(appointments_return)  # Set the many-to-many relationship
+        program.move_at.set(appointments_return)  
     
             
     return Response({'detail': 'Dogy'}, status=status.HTTP_201_CREATED)

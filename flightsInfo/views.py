@@ -13,7 +13,7 @@ from flights.models import Program
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_packages(request):
-    packages = Package.objects.all()
+    packages = Package.objects.filter(city=request.user.city)
     serialized_packages = PackageSerializer(packages, many=True)
     return Response(serialized_packages.data, status=status.HTTP_200_OK)
 
