@@ -8,6 +8,8 @@ admin.site.register(QA)
 
 ########## UN REGISTER SOME USELESS MODELS FOR ADMIN ######################
 
+# print(admin.site._registry)        TO GET ALL REGISTERED MODELS
+
 from django.contrib.sites.models import Site
 from django_celery_results.models import TaskResult, GroupResult
 from django_celery_beat.models import IntervalSchedule, CrontabSchedule, SolarSchedule, ClockedSchedule, PeriodicTask
