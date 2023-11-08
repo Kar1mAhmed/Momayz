@@ -37,6 +37,8 @@ class Flight(models.Model):
     
     class Meta:
         unique_together = ('time', 'program', 'date')
+        ordering = ['date', 'time']
+
     
     def save(self, *args, **kwargs):
         if not self.pk:
