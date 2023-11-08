@@ -11,18 +11,23 @@ def create_new_flights_for_all_programs(date):
         create_flight(program, date)
 
 
-def create_flight(program, date):
-    for appointment in program.move_at.all():
-        new_flight = Flight.objects.create(program=program, date=date, time=appointment.time)
-        new_flight.save()
+def create_flight(program):
+    cairo_timezone = pytz.timezone('Africa/Cairo')
+    today_date = timezone.now().astimezone(cairo_timezone).date()
+    
+    for day in range(31):
+        date = today_date + timedelta(days=day)
+        day_name = date.strftime('%A')
+        for appointment in program.move_at.all():
+            if appointment.day.name == day_name:
+                new_flight = Flight.objects.create(program=program, date=date, time=appointment.time)
+                new_flight.save()
 
-def create_flights_all_programs(date):
+def create_flights_all_programs():
     programs = Program.objects.all()
 
     for program in programs:
-        flights = Flight.objects.filter(program=program, date=date)
-        if not flights.exists():
-            create_flight(program=program, date=date)
+        create_flight(program=program)
 
 
 

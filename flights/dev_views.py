@@ -43,14 +43,9 @@ def add_flight_for_next_month(request):
 
 @api_view(['POST'])
 def do(request):
-    cites = Area.objects.filter(city=True)
-    
-    for city in cites:
-        Package.objects.create(city=city, num_of_flights=16, price=290, name='اشتراك الحضور')
-        Package.objects.create(city=city, num_of_flights=32, price=580, name='اشتراك المواظبة')
-        Package.objects.create(city=city, num_of_flights=48, price=860, name='الاشتراك المميز')
-        
-    return Response({"detail": "flights Created"}, status=status.HTTP_200_OK)
+    flights = Flight.objects.all()
+    flights.delete()
+    return Response({"detail": "Done"}, status=status.HTTP_200_OK)
 
 
 
@@ -104,11 +99,7 @@ def test_not(request):
             
 @api_view(['POST'])
 def create_all_programs_30(request):
-    cairo_timezone = pytz.timezone('Africa/Cairo')
-    today_date = timezone.now().astimezone(cairo_timezone).date()
     
-    for i in range(31):
-        date = today_date + timedelta(days=i)
-        create_flights_all_programs(date)
+    create_flights_all_programs()
     
     return Response({'detail': 'Created'}, status=status.HTTP_201_CREATED)
