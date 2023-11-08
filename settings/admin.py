@@ -4,8 +4,9 @@ from .models import QA
 
 admin.site.register(QA) 
 
-########## UN REGISTER SOME USELESS MODELS FOR ADMIN ######################
 
+
+########## UN REGISTER SOME USELESS MODELS FOR ADMIN ######################
 
 from django.contrib.sites.models import Site
 from django_celery_results.models import TaskResult, GroupResult
