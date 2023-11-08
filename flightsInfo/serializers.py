@@ -12,6 +12,7 @@ class PackageSerializer(serializers.ModelSerializer):
 
 
 class AppointmentsSerializer(serializers.ModelSerializer):
+    day_name = serializers.CharField(source='day.name')
     class Meta:
         model = Appointments
-        fields = ['time']
+        fields = ['time', 'day_name']
