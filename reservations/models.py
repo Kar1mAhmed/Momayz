@@ -163,5 +163,5 @@ class Subscription(models.Model):
         self.save()
             
             
-    def get_passed_reservations(self):
+    def get_remaining_reservations(self):
         return self.reservations.count()
