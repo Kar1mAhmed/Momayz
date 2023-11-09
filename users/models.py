@@ -39,7 +39,7 @@ class User(AbstractBaseUser):
     credits = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     img = models.CharField(max_length=100, blank=True, null=True)
     
-    notification_token = models.CharField(max_length=255)
+    notification_token = models.CharField(max_length=255, null=True, blank=True)
     
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
