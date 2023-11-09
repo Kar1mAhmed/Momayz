@@ -56,7 +56,7 @@ class ReservationAdmin(admin.ModelAdmin):
     flight_time.short_description = 'Time'
     
 class SubscriptionAdmin(admin.ModelAdmin):
-    list_display = ['user', 'package', 'started_at', 'passed_reservations']
+    list_display = ['user', 'package']
     
 admin.site.register(Reservation, ReservationAdmin)
 admin.site.register(Subscription, SubscriptionAdmin)
