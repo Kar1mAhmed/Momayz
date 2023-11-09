@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from django.core.exceptions import ObjectDoesNotExist
 
+from dj_rest_auth.views import LogoutView
 
 from .models import User
 from .serializers import *
@@ -18,6 +19,10 @@ class UserDetails(RetrieveUpdateDestroyAPIView):
     serializer_class = UserRegisterSerializer
 
 
+class CustomLogoutView(LogoutView):
+     def post(self, request, *args, **kwargs):
+        request.user.remove_notification_token()
+        return self.logout(request)
 
 
 @api_view(['POST'])

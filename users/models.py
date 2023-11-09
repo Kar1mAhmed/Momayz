@@ -54,7 +54,10 @@ class User(AbstractBaseUser):
 
     objects = MyUserManager()
 
-    
+    def remove_notification_token(self):
+        self.notification_token = None
+        self.save()
+        
     def deduct_credits(self, amount):
         if self.credits >= amount:
             self.credits -= amount
