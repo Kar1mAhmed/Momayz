@@ -118,26 +118,17 @@ class SubscriptionManager(models.Manager):
             # Create a subscription
             with transaction.atomic():
                 subscription = self.create(package=package, user=user)
-
                 # Create reservations and set first_flight_date and last_flight_date
-                first_flight_date = None
-                last_flight_date = None
                 reservations = []
                 last_flight = None
                 for flight in flights:
                     last_flight = flight
                     reservation = Reservation.objects.create(user=user, flight=flight, subscription=subscription)
                     reservations.append(reservation)
-                    if not first_flight_date or flight.date < first_flight_date:
-                        first_flight_date = flight.date
-                    if not last_flight_date or flight.date > last_flight_date:
-                        last_flight_date = flight.date
-
-                subscription.first_flight_date = first_flight_date
-                subscription.last_flight_date = last_flight_date
                 subscription.reservations.set(reservations)
-                
+            
                 subscription.user.deduct_credits(subscription.package.price)
+                subscription.collect_flights_info()
         except Exception as e:
             print(e)
             return False, last_flight
@@ -156,5 +147,21 @@ class Subscription(models.Model):
     
     objects = SubscriptionManager()
     
+
+    def collect_flights_info(self):
+        first_date = None
+        last_date = None
+        
+        for res in self.reservations.all():
+            if first_date is None or first_date > res.flight.date:
+                first_date = res.flight.date
+            if last_date is None or last_date < res.flight.date:
+                last_date = res.flight.date
+
+        self.first_flight_date = first_date
+        self.last_flight_date = last_date
+        self.save()
+            
+            
     def get_passed_reservations(self):
         return self.reservations.count()

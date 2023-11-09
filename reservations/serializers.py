@@ -28,7 +28,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
     total_reservations = serializers.SerializerMethodField()
     class Meta:
         model = Subscription
-        exclude = ['package', 'user', 'started_at', 'id']
+        exclude = ['package', 'user', 'id', 'reservations']
         
     def get_total_reservations(self, obj):
         return obj.get_passed_reservations()
