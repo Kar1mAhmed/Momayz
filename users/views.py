@@ -21,7 +21,10 @@ class UserDetails(RetrieveUpdateDestroyAPIView):
 
 class CustomLogoutView(LogoutView):
      def post(self, request, *args, **kwargs):
-        request.user.remove_notification_token()
+        try:
+            request.user.remove_notification_token()
+        except Exception:
+            pass
         return self.logout(request)
 
 

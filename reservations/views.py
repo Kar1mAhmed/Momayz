@@ -107,35 +107,13 @@ class PackageView(APIView):
         if not flights or len(flights) != package.num_of_flights:
             return Response({'detail': 'something went wrong please try again.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        last_flight = None
-        try:
-            with transaction.atomic():
-                subscription = Subscription.objects.create(user=request.user, package=package)
-                
-                first_flight = None
-                last_flight = None
-
-                for flight in flights:
-                    Reservation.objects.create(user=request.user, flight=flight, subscription=subscription)
-                    if not first_flight or flight.date < first_flight.date:
-                        first_flight = flight
-                    if not last_flight or flight.date > last_flight.date:
-                        last_flight = flight
-                
-                subscription.first_flight_date = first_flight.date if first_flight else timezone.now().date()
-                subscription.last_flight_date = last_flight.date if last_flight else timezone.now().date()
-                subscription.save()
-
-                request.user.deduct_credits(package.price)
-                
-                
-        except Exception as e:
-            flight_with_error = FlightSerializer(last_flight)
-            return Response({
-                        'detail': str(e),
-                        'error_at_flight': flight_with_error.data},
-                        status=status.HTTP_400_BAD_REQUEST)
+        created, subscription_or_error = Subscription.objects.custom_create(user=request.user, package=package, flights=flights)
         
+        if not created:
+            full_flight = FlightSerializer(subscription_or_error)
+            return Response({'detail': 'Flight is full.',
+                            'error_at_flight': full_flight.data})
+            
         return Response({'detail': 'Package Reserved successfully.'}, status=status.HTTP_201_CREATED)
     
 
