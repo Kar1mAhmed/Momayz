@@ -12,7 +12,7 @@ class Reservation(models.Model):
     flight = models.ForeignKey(Flight, on_delete=models.PROTECT, db_index=True)
     reserved_at = models.DateTimeField(auto_now_add=True)
     seat_number = models.SmallIntegerField()
-    subscription = models.ForeignKey('Subscription', related_name='subscription', on_delete=models.DO_NOTHING, null=True, blank=True, db_index=True)
+    subscription = models.ForeignKey('Subscription', related_name='subscription', on_delete=models.CASCADE, null=True, blank=True, db_index=True)
 
     
     class Meta:

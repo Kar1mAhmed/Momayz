@@ -79,10 +79,3 @@ def flights_by_date(request):
 
     data_serialized = FlightSerializer(flights, many=True)
     return Response(data_serialized.data, status=status.HTTP_200_OK)
-
-
-
-
-
-
-
