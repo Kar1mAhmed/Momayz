@@ -56,7 +56,16 @@ class ReservationAdmin(admin.ModelAdmin):
     flight_time.short_description = 'Time'
     
 class SubscriptionAdmin(admin.ModelAdmin):
-    list_display = ['user', 'package']
+    list_display = ['user', 'package', 'passed_flights', 'total_flights']
+    
+    def total_flights(self, obj):
+        return obj.total_flights_count()
+    total_flights.short_description = 'total_flights'
+    
+    def passed_flights(self, obj):
+        return obj.passed_flights_count()
+    passed_flights.short_description = 'passed_flights'
+
     
 admin.site.register(Reservation, ReservationAdmin)
 admin.site.register(Subscription, SubscriptionAdmin)

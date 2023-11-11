@@ -31,4 +31,4 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         exclude = ['package', 'user', 'id', 'reservations']
         
     def get_passed_reservations(self, obj):
-        return obj.package.num_of_flights - obj.get_remaining_reservations()
+        return str(obj.passed_flights_count())

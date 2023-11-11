@@ -71,15 +71,6 @@ class PackageView(APIView):
         user = request.user
         subscriptions = Subscription.objects.filter(user=user)
         
-        if subscriptions.count() == 0:
-            return Response({
-            "package_name": " لا يوجد اشتراك",
-            "total_reservations": "0",
-            "price": "0",
-            "passed_reservations": 0,
-            "first_flight_date": "",
-            "last_flight_date": ""},status=status.HTTP_404_NOT_FOUND)
-        
         serialized_data = SubscriptionSerializer(subscriptions.first())
         return Response(serialized_data.data, status=status.HTTP_200_OK)
 

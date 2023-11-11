@@ -64,14 +64,14 @@ def tomorrow_flights(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def flights_by_date(request):
-    user = request.user 
     
     date = request.GET.get('date')
     move_from = request.GET.get('move_from')
     move_to = request.GET.get('move_to')
 
     flights = Flight.objects.filter(
-    Q(program__move_from__name=move_from) | Q(program__move_to__name=move_to), 
+    program__move_from__name=move_from,
+    program__move_to__name=move_to, 
     canceled=False,
     taken_seats__lt=models.F('total_seats'),
     date=date,

@@ -12,13 +12,16 @@ class Reservation(models.Model):
     flight = models.ForeignKey(Flight, on_delete=models.PROTECT, db_index=True)
     reserved_at = models.DateTimeField(auto_now_add=True)
     seat_number = models.SmallIntegerField()
-    subscription = models.ForeignKey('Subscription', related_name='subscription', on_delete=models.PROTECT, null=True, blank=True, db_index=True)
+    subscription = models.ForeignKey('Subscription', related_name='subscription', on_delete=models.DO_NOTHING, null=True, blank=True, db_index=True)
 
     
     class Meta:
         ordering = ['flight__date', 'flight__time']
         unique_together = ('flight', 'seat_number')
 
+    def __str__(self) -> str:
+        return f'reservation of {self.user.name} for flight ({self.flight.move_from} to {self.flight.move_to}'
+    
     def save(self, *args, **kwargs):
         if not self.pk:
             with transaction.atomic():
@@ -35,16 +38,17 @@ class Reservation(models.Model):
         return super().save(*args, **kwargs)
         
     
-    def delete(self, *args, **kwargs):
+    def delete(self, refund=True, *args, **kwargs):
         try:
             with transaction.atomic():
                 self.flight.decrement_taken_seats()
-                if self.subscription:
-                    credits_to_refund = self.subscription.package.price / self.subscription.package.num_of_flights
-                    self.user.refund_credits(credits_to_refund)
-                else:
-                    credits_to_refund = self.flight.program.price
-                    self.user.refund_credits(self.flight.program.price)
+                if refund:
+                    if self.subscription :
+                        credits_to_refund = self.subscription.package.price / self.subscription.package.num_of_flights
+                        self.user.refund_credits(credits_to_refund)
+                    else:
+                        credits_to_refund = self.flight.program.price
+                        self.user.refund_credits(self.flight.program.price)
                 return super().delete(*args, **kwargs)
         except Exception as e:
             raise e
@@ -130,7 +134,6 @@ class SubscriptionManager(models.Manager):
                 subscription.user.deduct_credits(subscription.package.price)
                 subscription.collect_flights_info()
         except Exception as e:
-            print(e)
             return False, last_flight
 
         return True, subscription
@@ -147,6 +150,15 @@ class Subscription(models.Model):
     
     objects = SubscriptionManager()
     
+    
+    def __str__(self) -> str:
+        return f'{self.package.name} of {self.user.name}'
+    
+    def delete(self, *args, **kwargs):
+        for res in self.reservations.all():
+            res.delete()
+            
+        return super.delete(*args, **kwargs)
 
     def collect_flights_info(self):
         first_date = None
@@ -163,5 +175,11 @@ class Subscription(models.Model):
         self.save()
             
             
-    def get_remaining_reservations(self):
+    def remaining_flights_count(self):
         return self.reservations.count()
+    
+    def passed_flights_count(self):
+        return self.package.num_of_flights - self.remaining_flights_count()
+    
+    def total_flights_count(self):
+        return self.package.num_of_flights
