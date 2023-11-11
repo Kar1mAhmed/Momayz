@@ -4,9 +4,9 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 
-from django.db import transaction
 from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Sum
 
 import pytz
 
@@ -72,13 +72,8 @@ class PackageView(APIView):
         subscriptions = Subscription.objects.filter(user=user)
         
         if subscriptions.count() == 0:
-            return Response({
-            "package_name": " لا يوجد اشتراك",
-            "total_reservations": "0",
-            "price": "0",
-            "passed_reservations": 0,
-            "first_flight_date": "",
-            "last_flight_date": ""},status=status.HTTP_404_NOT_FOUND)
+            daily_reservations_info = self.daily_reservation_info(user)
+            return Response(daily_reservations_info, status=status.HTTP_200_OK)
         
         serialized_data = SubscriptionSerializer(subscriptions.first())
         return Response(serialized_data.data, status=status.HTTP_200_OK)
@@ -115,6 +110,21 @@ class PackageView(APIView):
             
         return Response({'detail': 'Package Reserved successfully.'}, status=status.HTTP_201_CREATED)
     
+    def daily_reservation_info(user):
+        cairo_timezone = pytz.timezone('Africa/Cairo')
+        today = timezone.now().astimezone(cairo_timezone).date()
+        date_from_30days = today - timezone.timedelta(days=30)
+        
+        reservations_30day = Reservation.objects.filter(user=user, date__gte=date_from_30days)
+        total_price = reservations_30day.aggregate(Sum('flight__price'))['flight__price__sum']
+        
+        # !!! UNFINISHED
+        return{"package_name": "اشتراك يومي",
+                "total_reservations": reservations_30day.count(),
+                "price": total_price,
+                "passed_reservations": 0,
+                "first_flight_date": "",
+                "last_flight_date": ""}
 
 
 @api_view(['POST'])

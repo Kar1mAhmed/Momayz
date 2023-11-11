@@ -4,6 +4,8 @@ from users.models import User
 from flights.models import Flight
 from flightsInfo.models import Package
 
+from django.utils import timezone
+import pytz
 
 
 
@@ -176,7 +178,15 @@ class Subscription(models.Model):
             
             
     def remaining_flights_count(self):
-        return self.reservations.count()
+        cairo_timezone = pytz.timezone('Africa/Cairo')
+        today = timezone.now().astimezone(cairo_timezone).date()
+        current_time = timezone.now().astimezone(cairo_timezone).time()
+
+        remaining_reservations = self.reservations.filter(
+                                        models.Q(date__gt=today) | 
+                                        (models.Q(date=today) & 
+                                        models.Q(flight__time__gt=current_time)))
+        return remaining_reservations.count()
     
     def passed_flights_count(self):
         return self.package.num_of_flights - self.remaining_flights_count()
