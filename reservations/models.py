@@ -183,8 +183,8 @@ class Subscription(models.Model):
         current_time = timezone.now().astimezone(cairo_timezone).time()
 
         remaining_reservations = self.reservations.filter(
-                                        models.Q(date__gt=today) | 
-                                        (models.Q(date=today) & 
+                                        models.Q(flight__date__gt=today) | 
+                                        (models.Q(flight__date=today) & 
                                         models.Q(flight__time__gt=current_time)))
         return remaining_reservations.count()
     
