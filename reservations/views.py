@@ -80,6 +80,7 @@ class PackageView(APIView):
 
 
     def post(self, request, *args, **kwargs):
+        print(request.data)
         package_id = request.data['package_id']
         days = request.data['days']
         
