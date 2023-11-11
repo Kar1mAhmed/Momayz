@@ -58,6 +58,26 @@ class ReservationAdmin(admin.ModelAdmin):
 class SubscriptionAdmin(admin.ModelAdmin):
     list_display = ['user', 'package', 'passed_flights', 'total_flights']
     
+    
+    actions = ['immediate_delete']
+    
+    
+    def get_actions(self, request):
+        # Override the get_actions method to exclude the delete action
+        actions = super().get_actions(request)
+        del actions['delete_selected']
+        return actions
+
+    def immediate_delete(self, request, queryset):
+        for item in queryset:
+            item.delete()
+        self.message_user(
+            request,
+            f"items deleted.",
+        )
+
+    immediate_delete.short_description = "Delete selected items"
+    
     def total_flights(self, obj):
         return obj.total_flights_count()
     total_flights.short_description = 'total_flights'

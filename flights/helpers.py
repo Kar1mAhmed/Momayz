@@ -20,8 +20,11 @@ def create_flight(program):
         day_name = date.strftime('%A')
         for appointment in program.move_at.all():
             if appointment.day.name == day_name:
-                new_flight = Flight.objects.create(program=program, date=date, time=appointment.time)
-                new_flight.save()
+                try:
+                    Flight.objects.get(program=program, date=date, time=appointment.time)
+                except:
+                    new_flight = Flight.objects.create(program=program, date=date, time=appointment.time)
+                    new_flight.save()
 
 def create_flights_all_programs():
     programs = Program.objects.all()
