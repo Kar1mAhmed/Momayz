@@ -82,7 +82,7 @@ class PackageView(APIView):
     def post(self, request, *args, **kwargs):
         package_id = request.data['package_id']
         days = request.data['days']
-        
+        print(request.data)
         try:
             package = Package.objects.get(pk=package_id)
         except ObjectDoesNotExist:
@@ -98,6 +98,7 @@ class PackageView(APIView):
             return Response({'details': f'This package is {int(package.num_of_flights / WEEKS_PER_MONTH)} days per week'})
         
         flights = get_flights(days, request.user)
+        print(flights)
         if not flights or len(flights) != package.num_of_flights:
             return Response({'detail': 'something went wrong please try again.'}, status=status.HTTP_400_BAD_REQUEST)
         
@@ -109,6 +110,7 @@ class PackageView(APIView):
                             'error_at_flight': full_flight.data})
             
         return Response({'detail': 'Package Reserved successfully.'}, status=status.HTTP_201_CREATED)
+    
     
     def daily_reservation_info(self, user):
         cairo_timezone = pytz.timezone('Africa/Cairo')
