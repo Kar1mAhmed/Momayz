@@ -20,7 +20,7 @@ class Reservation(models.Model):
         unique_together = ('flight', 'seat_number')
 
     def __str__(self) -> str:
-        return f'reservation of {self.user.name} for flight ({self.flight.move_from} to {self.flight.move_to}'
+        return f'reservation of {self.user.name} for flight ({self.flight.program.move_from} to {self.flight.program.move_to}'
     
     def save(self, *args, **kwargs):
         if not self.pk:
