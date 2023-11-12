@@ -80,7 +80,6 @@ class PackageView(APIView):
 
 
     def post(self, request, *args, **kwargs):
-        print(request.data)
         package_id = request.data['package_id']
         days = request.data['days']
         
@@ -99,6 +98,7 @@ class PackageView(APIView):
             return Response({'details': f'This package is {int(package.num_of_flights / WEEKS_PER_MONTH)} days per week'})
         
         flights = get_flights(days, request.user)
+        
         if not flights or len(flights) != package.num_of_flights:
             return Response({'detail': 'something went wrong please try again.'}, status=status.HTTP_400_BAD_REQUEST)
         
