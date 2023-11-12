@@ -13,7 +13,7 @@ from .helpers import *
 from flights.models import Flight
 
 @shared_task(bind=True)
-def midnight_call(self, reservation_days=1, flights_days=1):
+def midnight(self, reservation_days=30, flights_days=1):
     delete_old_reservations(reservation_days)
     delete_old_flights(flights_days)
     

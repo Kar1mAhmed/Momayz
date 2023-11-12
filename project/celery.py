@@ -19,6 +19,11 @@ app.conf.beat_schedule = {
         'task': 'settings.tasks.flight_notification',
         'schedule': crontab(minute='*/30', hour='6-18')
     },
+    
+    'midnight': {
+        'task': 'settings.tasks.midnight',
+        'schedule': crontab(minute=0, hour=0)
+    },
 }
 
 app.autodiscover_tasks()
