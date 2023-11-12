@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from django.core.exceptions import ObjectDoesNotExist
 
-from dj_rest_auth.views import LogoutView
+from dj_rest_auth.views import LogoutView, LoginView
 
 from .models import User
 from .serializers import *
@@ -26,6 +26,30 @@ class CustomLogoutView(LogoutView):
         except Exception:
             pass
         return self.logout(request)
+
+
+class CustomLoginView(LoginView):
+    def post(self, request, *args, **kwargs):
+        self.request = request
+        self.serializer = self.get_serializer(data=self.request.data)
+        self.serializer.is_valid(raise_exception=True)
+
+        self.login()
+        
+        # Update notification token if it's in the request body
+        if 'notification_token' in request.data:
+            not_token = request.data['notification_token']
+            response = self.get_response()
+            
+            # if user authorized successfully 
+            if 'access' in response.data:
+                request.user.update_notification_token(not_token)
+                response.data['user']['notification_token'] = not_token
+                
+            return response
+        
+        return self.get_response()
+
 
 
 @api_view(['POST'])

@@ -58,6 +58,10 @@ class User(AbstractBaseUser):
         self.notification_token = None
         self.save()
         
+    def update_notification_token(self, new_token):
+        self.notification_token = new_token
+        self.save()
+        
     def deduct_credits(self, amount):
         if self.credits >= amount:
             self.credits -= amount
