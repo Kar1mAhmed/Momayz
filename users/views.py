@@ -38,13 +38,13 @@ class CustomLoginView(LoginView):
         
         # Update notification token if it's in the request body
         if 'notification_token' in request.data:
-            not_token = request.data['notification_token']
+            notfy_token = request.data['notification_token']
             response = self.get_response()
             
             # if user authorized successfully 
             if 'access' in response.data:
-                request.user.update_notification_token(not_token)
-                response.data['user']['notification_token'] = not_token
+                request.user.update_notification_token(notfy_token)
+                response.data['user']['notification_token'] = notfy_token
                 
             return response
         

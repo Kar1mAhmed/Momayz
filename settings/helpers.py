@@ -2,14 +2,16 @@ from reservations.models import Reservation
 from flights.models import Flight
 import requests
 
-def notify_flight(flight_id=1408):
-    Reservations = Reservation.objects.filter(flight=flight_id)
-    flight = Flight.objects.get(pk=flight_id)
+def notify_flight(flight_id):
+    flight_reservations = Reservation.objects.filter(flight=flight_id)
+    unique_notification_tokens = flight_reservations.values('user__notification_token').distinct()
     
+    flight = Flight.objects.get(pk=flight_id)
     notification_body = f'ستنطلق رحلتك من {flight.program.move_from} إلي {flight.program.move_to} قريبا.'
-    for reservation in Reservations:
-        send_notification(reservation.user.notification_token, notification_body)
-        
+    
+    for token_dict in unique_notification_tokens:
+        notification_token = token_dict['user__notification_token']
+        send_notification(notification_token, notification_body)
 
 
 

@@ -5,7 +5,7 @@ from reservations.helpers import delete_old_reservations
 
 from django.utils import timezone
 
-from datetime import  timedelta
+from datetime import  timedelta, datetime
 import pytz
 
 from .helpers import *
@@ -22,20 +22,22 @@ def midnight_call(self, reservation_days=1, flights_days=1):
     date_after_30 = today_date + timedelta(days=30)
     
     create_flights_all_programs(date_after_30)
-    
 
 
 @shared_task(bind=True)
-def notify_before_30min(self):
-    print("DOGYYYYYYY STYLEEEE")
-    # cairo_timezone = pytz.timezone('Africa/Cairo')
-    # today_date = timezone.now().astimezone(cairo_timezone).date()
-    # Flights = Flight.objects.filter(date=today_date)
-    
-    # current_time =  timezone.now().astimezone(cairo_timezone).time()
-    # time_in_30_minutes = current_time + timedelta(minutes=35)
+def test(self):
+    send_notification('dYU3ueiiTaqbFqPDJUYFKW:APA91bFVybq0_x8l4BDecbAHPwLNKcHlJPn9bVXYiDeUt8DC-XDRD4vUN37tHCl6lzhLPrvy9ePamiGMttx1Vtl3O7RhkWFhLY6nsMfwB0CjoebKkzIVR3DRydqwRkDueGb9P2r1vWn5', 'محمود سعيد')
 
-        #if flight.time < time_in_30_minutes and not flight.notified:
-    # notify_flight(1626)
+@shared_task(bind=True)
+def flight_notification(self):
+    cairo_timezone = pytz.timezone('Africa/Cairo')
+    current_datetime = timezone.now().astimezone(cairo_timezone)
+    Flights = Flight.objects.filter(date=current_datetime.today(), notified=False)
+
+    time_in_30m =(datetime.combine(current_datetime.today(), current_datetime.time()) + timedelta(minutes=35)).time()
+
+    for flight in Flights:
+        # if flight.time < time_in_30m:
+        notify_flight(flight.pk)
             # flight.notified = True
             # flight.save()

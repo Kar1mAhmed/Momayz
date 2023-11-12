@@ -15,15 +15,10 @@ app.conf.update(timezone = 'Africa/Cairo')
 app.config_from_object(settings, namespace='CELERY')
 
 app.conf.beat_schedule = {
-    'test': {
-        'task': 'settings.tasks.midnight_call',
-        'schedule': crontab(minute=20, hour=17)
+    'test30': {
+        'task': 'settings.tasks.flight_notification',
+        'schedule': crontab(minute='*/2', hour='6-18')
     },
-    
-    # 'flight_notification': {
-    #     'task': 'settings.tasks.notify_before_30min',
-    #     'schedule': crontab(minute='*/1')
-    # },
 }
 
 app.autodiscover_tasks()
