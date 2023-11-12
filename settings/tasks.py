@@ -24,9 +24,6 @@ def midnight_call(self, reservation_days=1, flights_days=1):
     create_flights_all_programs(date_after_30)
 
 
-@shared_task(bind=True)
-def test(self):
-    send_notification('dYU3ueiiTaqbFqPDJUYFKW:APA91bFVybq0_x8l4BDecbAHPwLNKcHlJPn9bVXYiDeUt8DC-XDRD4vUN37tHCl6lzhLPrvy9ePamiGMttx1Vtl3O7RhkWFhLY6nsMfwB0CjoebKkzIVR3DRydqwRkDueGb9P2r1vWn5', 'محمود سعيد')
 
 @shared_task(bind=True)
 def flight_notification(self):
@@ -34,10 +31,10 @@ def flight_notification(self):
     current_datetime = timezone.now().astimezone(cairo_timezone)
     Flights = Flight.objects.filter(date=current_datetime.today(), notified=False)
 
-    time_in_30m =(datetime.combine(current_datetime.today(), current_datetime.time()) + timedelta(minutes=35)).time()
+    time_in_30m =(datetime.combine(current_datetime.today(), current_datetime.time()) + timedelta(minutes=32)).time()
 
     for flight in Flights:
-        # if flight.time < time_in_30m:
-        notify_flight(flight.pk)
-            # flight.notified = True
-            # flight.save()
+        if flight.time < time_in_30m:
+            notify_flight(flight.pk)
+            flight.notified = True
+            flight.save()
