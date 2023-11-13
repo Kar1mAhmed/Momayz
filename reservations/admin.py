@@ -1,6 +1,9 @@
 from django.contrib import admin
 
 from .models import Reservation, Subscription
+from django.utils import timezone
+import pytz
+
 
 class ReservationAdmin(admin.ModelAdmin):
     readonly_fields = ['seat_number', 'subscription']
@@ -23,6 +26,11 @@ class ReservationAdmin(admin.ModelAdmin):
 
     immediate_delete.short_description = "Delete selected items "
     
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        cairo_timezone = pytz.timezone('Africa/Cairo')
+        current_date = timezone.now().astimezone(cairo_timezone).date()
+        return qs.filter(flight__date__gte=current_date)
     
     def get_actions(self, request):
         # Override the get_actions method to exclude the delete action

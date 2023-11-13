@@ -18,6 +18,7 @@ class FlightAdmin(admin.ModelAdmin):
         current_date = timezone.now().astimezone(cairo_timezone).date()
         return qs.filter(date__gte=current_date)
     
+    
     def get_search_results(self, request, queryset, search_term):
         lookup = (
             Q(program__move_from__name__icontains=search_term) |
