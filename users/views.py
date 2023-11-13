@@ -11,7 +11,6 @@ from .models import User
 from .serializers import *
 
 from otp.models import OTP
-from otp.views import otp_expired
 
 class UserDetails(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
@@ -82,6 +81,6 @@ def get_otp_status(phone_number, otp):
         return "No OTP for this number"
     if last_otp.code != otp :
         return "Wrong OTP."
-    if otp_expired(last_otp):
+    if last_otp.is_expired():
         return "OTP expired."
     return "good"

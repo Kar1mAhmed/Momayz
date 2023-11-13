@@ -18,7 +18,7 @@ from users.models import User
 OTP_LIMIT_FOR_NUMBER = 20 
 OTP_LIMIT_FOR_NUMBER_PER_DAY = 10
 OTP_LIMIT_FOR_NUMBER_PER_HOUR = 5
-OTP_EXPIRATION_SECONDS = 15
+OTP_EXPIRATION_MIN = 15
 
 
 def check_spam(phone_number):
@@ -72,31 +72,23 @@ def verify_otp(request):
     phone_number = request.data["phone_number"]
     otp_code = request.data["code"]
         
-    last_otp = OTP.objects.filter(phone_number=phone_number).order_by('-created_at').first()
+    otps = OTP.objects.filter(phone_number=phone_number).order_by('-created_at')
+    last_otp = otps.first()
 
     if not last_otp:
         return Response({'detail': "No OTP found for this phone number."}, status=status.HTTP_400_BAD_REQUEST)
     
     if last_otp.code == otp_code:
-        expired= otp_expired(last_otp)
-        if expired:  
+        if last_otp.is_expired():  
             return Response({'detail': "OTP expired."}, status.HTTP_400_BAD_REQUEST)
         else:
-            otps_to_delete = OTP.objects.filter(phone_number=phone_number).exclude(id=last_otp.id)
-            otps_to_delete.delete()
+            otps = OTP.objects.filter(phone_number=phone_number).exclude(id=last_otp.id)
+            otps.exclude(id=last_otp.id)
             return Response({'detail': "Verified."}, status=status.HTTP_200_OK)
     else:
         return Response({'detail': "Wrong OTP."})
     
-    
-def otp_expired(otp):
-    current_time = timezone.now()
-    time_difference = current_time - otp.created_at
-    time_difference_in_minutes = time_difference / timedelta(minutes=1)
-    if time_difference_in_minutes >= OTP_EXPIRATION_SECONDS:  
-        return True # expired
-    else:
-        return False
+
     
 def check_phone_exist(phone_number):
     try:
