@@ -2,6 +2,9 @@ from django.contrib import admin
 from .models import Flight, Program
 from django.db.models import Q
 
+from django.utils import timezone
+import pytz
+
 
 class FlightAdmin(admin.ModelAdmin):
     list_display = ['move_from', 'move_to', 'date', 'time', 'taken_seats', 'total_seats']
@@ -9,7 +12,11 @@ class FlightAdmin(admin.ModelAdmin):
     search_fields = ["program__move_from__name", "program__move_to__name", "date", "time", "canceled"] 
     
     
-    
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        cairo_timezone = pytz.timezone('Africa/Cairo')
+        current_date = timezone.now().astimezone(cairo_timezone).date()
+        return qs.filter(date__gte=current_date)
     
     def get_search_results(self, request, queryset, search_term):
         lookup = (

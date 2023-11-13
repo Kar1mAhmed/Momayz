@@ -11,7 +11,7 @@ import pytz
 
 class Reservation(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, db_index=True)
-    flight = models.ForeignKey(Flight, on_delete=models.PROTECT, db_index=True)
+    flight = models.ForeignKey(Flight, on_delete=models.DO_NOTHING, db_index=True)
     reserved_at = models.DateTimeField(auto_now_add=True)
     seat_number = models.SmallIntegerField()
     subscription = models.ForeignKey('Subscription', related_name='subscription', on_delete=models.DO_NOTHING, null=True, blank=True, db_index=True)

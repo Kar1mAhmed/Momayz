@@ -38,7 +38,6 @@ def delete_old_flights(passed_days=1):
     cairo_timezone = pytz.timezone('Africa/Cairo')
     current_date = timezone.now().astimezone(cairo_timezone).date()
     deletion_date = current_date - timedelta(days=passed_days)
-    print(f'flights-> {deletion_date}')
     # Delete old flights
     Flight.objects.filter(date__lt=deletion_date).delete()
 

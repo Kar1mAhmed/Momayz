@@ -9,14 +9,15 @@ from datetime import  timedelta, datetime
 import pytz
 
 from .helpers import *
+from otp.helpers import delete_old_otps
 
 from flights.models import Flight
 
 @shared_task(bind=True)
-def midnight(self, reservation_days=30, flights_days=1):
+def midnight(self, reservation_days=30, flights_days=30):
     delete_old_reservations(reservation_days)
     delete_old_flights(flights_days)
-    
+    delete_old_otps()
     cairo_timezone = pytz.timezone('Africa/Cairo')
     today_date = timezone.now().astimezone(cairo_timezone).date()
     date_after_30 = today_date + timedelta(days=30)
