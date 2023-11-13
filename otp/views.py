@@ -52,6 +52,10 @@ def generate_otp(request):
     if check_phone_exist(phone_number) and reset != True:
         return Response({'detail': 'الرقم مستخدم بالفعل.'}, status=status.HTTP_409_CONFLICT)
     
+    if reset == True and not check_phone_exist(phone_number):
+        return Response({"detail": "User doesn't exist"}, status=status.HTTP_400_BAD_REQUEST)
+
+    
     if not is_egyptian_number(phone_number):
         return Response({"detail": "Wrong phone number."}, status=status.HTTP_400_BAD_REQUEST)
     
