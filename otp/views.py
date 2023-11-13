@@ -47,9 +47,9 @@ def send_otp(phone):
 @api_view(['POST'])
 def generate_otp(request):
     phone_number = request.data['phone_number']
+    reset = request.data.get('reset')
     
-    
-    if check_phone_exist(phone_number):
+    if check_phone_exist(phone_number) and reset != True:
         return Response({'detail': 'الرقم مستخدم بالفعل.'}, status=status.HTTP_409_CONFLICT)
     
     if not is_egyptian_number(phone_number):
