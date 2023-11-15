@@ -5,8 +5,6 @@ from celery import Celery
 from django.conf import settings
 from celery.schedules import crontab
 
-from django_celery_beat.models import PeriodicTask
-
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings')
 
 app = Celery('project')
