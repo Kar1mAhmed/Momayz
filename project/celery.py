@@ -5,6 +5,8 @@ from celery import Celery
 from django.conf import settings
 from celery.schedules import crontab
 
+from django_celery_beat.models import PeriodicTask
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings')
 
 app = Celery('project')
@@ -13,6 +15,9 @@ app.conf.enable_utc = False
 app.conf.update(timezone = 'Africa/Cairo')
 
 app.config_from_object(settings, namespace='CELERY')
+
+# Deleting the old periodic tasks to re init it 
+PeriodicTask.objects.exclude(name='celery.backend_cleanup').delete()
 
 app.conf.beat_schedule = {
     'flight_notification': {
