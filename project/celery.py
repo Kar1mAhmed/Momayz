@@ -16,8 +16,6 @@ app.conf.update(timezone = 'Africa/Cairo')
 
 app.config_from_object(settings, namespace='CELERY')
 
-# Deleting the old periodic tasks to re init it 
-PeriodicTask.objects.exclude(name='celery.backend_cleanup').delete()
 
 app.conf.beat_schedule = {
     'flight_notification': {
