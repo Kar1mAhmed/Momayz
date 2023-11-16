@@ -23,7 +23,7 @@ if response.status_code == 200:
     if "code" in response_data:
         code = response_data["code"]
         if code == "4901":
-            print("Message submitted successfully.")
+            print("Message submitted successfully")
             print("SMSID:", response_data.get("SMSID"))
             print("Cost:", response_data.get("Cost"))
         elif code == "4906":
