@@ -6,4 +6,4 @@ class OTPAdmin(admin.ModelAdmin):
     list_display = [field.name for field in OTP._meta.fields]
 
 
-admin.site.register(OTP, OTPAdmin)
+# admin.site.register(OTP, OTPAdmin)
