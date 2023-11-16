@@ -37,5 +37,5 @@ def flight_notification(self):
     for flight in Flights:
         if flight.time < time_in_30m:
             notify_flight(flight.pk)
-            flight.notified = True
-            flight.save()
+            # flight.notified = True
+            # flight.save()
