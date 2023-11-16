@@ -23,10 +23,10 @@ admin.site.unregister(TaskResult)
 admin.site.unregister(GroupResult)
 
 admin.site.unregister(IntervalSchedule)
-# admin.site.unregister(CrontabSchedule)
+admin.site.unregister(CrontabSchedule)
 admin.site.unregister(SolarSchedule)
 admin.site.unregister(ClockedSchedule)
-# admin.site.unregister(PeriodicTask)
+admin.site.unregister(PeriodicTask)
 
 
 admin.site.unregister(Group)
