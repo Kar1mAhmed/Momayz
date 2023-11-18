@@ -42,3 +42,5 @@ admin.site.unregister(Site)
 
 
 
+admin.site.site_header = 'Momayz Admin'
+
