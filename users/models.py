@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from locations.models import Area
 
+import requests
+
 class MyUserManager(BaseUserManager):
     def create_user(self, username, password=None):
         user = self.model(
@@ -53,6 +55,15 @@ class User(AbstractBaseUser):
     REQUIRED_FIELDS = []
 
     objects = MyUserManager()
+    
+    def __str__(self):
+        return  self.username
+    
+    def has_perm(self, perm, obj=None):
+        return self.is_superuser
+
+    def has_module_perms(self, app_label):
+        return True
 
     def remove_notification_token(self):
         self.notification_token = None
@@ -75,11 +86,35 @@ class User(AbstractBaseUser):
         self.save(update_fields=['credits'])
         return True
     
-    def __str__(self):
-        return  self.username
-    
-    def has_perm(self, perm, obj=None):
-        return self.is_superuser
+    def send_notification(self, notification_body):
+        # Define the FCM API URL
+        fcm_url = "https://fcm.googleapis.com/fcm/send"
 
-    def has_module_perms(self, app_label):
-        return True
+        # Define your FCM server key
+        fcm_server_key = "AAAAxm5MHOE:APA91bFTvcbli2I_poG2wffmnyrLSiYpFYUTpceFEq8MfCQndP3xWMmcrmNrQZuZCytXqaG9YIfsKj4SzB3D8-j9gWNFVWbB2LHJ0cIvm5qXgi1QHFhTRFNADYdQ9YaP-TDVqbjdLcPZ"
+
+        # Define the headers for the request
+        headers = {
+            "Authorization": "key=" + fcm_server_key,
+            "Content-Type": "application/json"
+        }
+
+        # Define the JSON payload for the POST request
+        payload = {
+            "to": self.notification_token,
+            "notification": {
+                "body": notification_body,
+                "title": "Momayz",
+                "android_channel_id": "2"
+            },
+            "data": {
+                "click_action": "FLUTTER_NOTIFICATION_CLICK",
+                "status": "done",
+                "body": "body",
+                "title": "title"
+            },
+            "priority": "high"
+        }
+
+        # Send the POST request to FCM
+        response = requests.post(fcm_url, json=payload, headers=headers)

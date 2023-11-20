@@ -4,26 +4,34 @@ from rest_framework.decorators import api_view
 
 import hashlib
 import hmac
+from project.settings import HMAC_KEY
 
 
 from users.models import User
 from .models import Payment
 
-from project.settings import HMAC_KEY
 
 @api_view(['POST'])
 def pay(request):
     if not HMAC_authentication(request):
         return Response(status=status.HTTP_401_UNAUTHORIZED)
     
-    # user_phone = request.request.data['obj']['payment_key_claims']['billing_request.data']['phone_number']
-    # req_data = collect_required(request.request.data)
-    # try:
-    #     user = User.objects.get(username=user_phone)
-    # except:
-    #     Payment.objects.create(request)
-        
-    return Response(status=status.HTTP_200_OK)
+    user_phone = request.data['obj']['payment_key_claims']['billing_data']['phone_number']
+    user_phone = '01062024263'
+    user = User.objects.get(username=user_phone)
+    
+    success = request.data['obj']['success']
+    
+    if success:
+        amount = request.data['obj']['data']['amount']
+        user.refund_credits(int(amount))
+        user.send_notification(f'تم إضافة {amount} جنية لحسابكم.')        
+        return Response(status=status.HTTP_200_OK)
+
+    user.send_notification(f'حدث خطأ أثناء شحن الرصيد.') 
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
 
 
 
