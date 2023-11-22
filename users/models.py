@@ -86,7 +86,7 @@ class User(AbstractBaseUser):
         self.save(update_fields=['credits'])
         return True
     
-    def send_notification(self, notification_body):
+    def send_notification(self, notification_body, body='body'):
         # Define the FCM API URL
         fcm_url = "https://fcm.googleapis.com/fcm/send"
 
@@ -110,7 +110,7 @@ class User(AbstractBaseUser):
             "data": {
                 "click_action": "FLUTTER_NOTIFICATION_CLICK",
                 "status": "done",
-                "body": "body",
+                "body": body,
                 "title": "title"
             },
             "priority": "high"
