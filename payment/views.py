@@ -27,10 +27,10 @@ class PaymentView(APIView):
         if success:
             amount = request.data['obj']['data']['amount']
             user.refund_credits(int(amount))
-            user.send_notification(f'تم إضافة {amount} جنية لحسابكم.', body=payment) 
+            user.send_notification(f'تم إضافة {amount} جنية لحسابكم.', details=payment) 
             return Response(payment, status=status.HTTP_200_OK)
 
-        user.send_notification(f'حدث خطأ أثناء شحن الرصيد.', body=payment) 
+        user.send_notification(f'حدث خطأ أثناء شحن الرصيد.', details=payment) 
         return Response(payment, status=status.HTTP_400_BAD_REQUEST)
     
     def get(self, request, *args, **kwargs):
