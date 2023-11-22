@@ -18,7 +18,6 @@ class PaymentView(APIView):
                 return Response(status=status.HTTP_401_UNAUTHORIZED)
     
         user_phone = request.data['obj']['payment_key_claims']['billing_data']['phone_number']
-        user_phone = '01062024263'
         user = User.objects.get(username=user_phone)
         
         success = request.data['obj']['success']
