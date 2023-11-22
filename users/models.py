@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from locations.models import Area
 
-import requests
+from project.celery import notfiy
 
 class MyUserManager(BaseUserManager):
     def create_user(self, username, password=None):
@@ -87,19 +87,13 @@ class User(AbstractBaseUser):
         return True
     
     def send_notification(self, notification_body, details=None):
-        # Define the FCM API URL
         fcm_url = "https://fcm.googleapis.com/fcm/send"
-
-        # Define your FCM server key
         fcm_server_key = "AAAAxm5MHOE:APA91bFTvcbli2I_poG2wffmnyrLSiYpFYUTpceFEq8MfCQndP3xWMmcrmNrQZuZCytXqaG9YIfsKj4SzB3D8-j9gWNFVWbB2LHJ0cIvm5qXgi1QHFhTRFNADYdQ9YaP-TDVqbjdLcPZ"
-
-        # Define the headers for the request
         headers = {
             "Authorization": "key=" + fcm_server_key,
             "Content-Type": "application/json"
         }
 
-        # Define the JSON payload for the POST request
         payload = {
             "to": self.notification_token,
             "notification": {
@@ -117,5 +111,4 @@ class User(AbstractBaseUser):
             'details': details
         }
 
-        # Send the POST request to FCM
-        requests.post(fcm_url, json=payload, headers=headers)
+        notfiy.delay(fcm_url, headers, payload)

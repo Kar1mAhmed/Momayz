@@ -1,9 +1,11 @@
 from __future__ import absolute_import, unicode_literals
-import os
 
 from celery import Celery
 from django.conf import settings
 from celery.schedules import crontab
+
+import os
+import requests
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings')
 
@@ -30,5 +32,5 @@ app.conf.beat_schedule = {
 app.autodiscover_tasks()
 
 @app.task(bind=True)
-def debug_task(self):
-    print(f'Request: {self.request!r}')
+def notfiy(self, fcm_url, payload, headers):
+    requests.post(fcm_url, json=payload, headers=headers)
