@@ -111,4 +111,4 @@ class User(AbstractBaseUser):
             'details': details
         }
 
-        notfiy.delay(fcm_url, headers, payload)
+        notfiy.delay(fcm_url, payload, headers)
