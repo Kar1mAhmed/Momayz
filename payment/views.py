@@ -14,8 +14,8 @@ import hmac
 
 class PaymentView(APIView):
     def post(self, request, *args, **kwargs):
-        if not self.HMAC_authentication(request):
-                return Response(status=status.HTTP_401_UNAUTHORIZED)
+        # if not self.HMAC_authentication(request):
+        #         return Response(status=status.HTTP_401_UNAUTHORIZED)
     
         user_phone = request.data['obj']['payment_key_claims']['billing_data']['phone_number']
         user_phone = '01062024263'
