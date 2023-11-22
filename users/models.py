@@ -101,14 +101,8 @@ class User(AbstractBaseUser):
                 "title": "Momayz",
                 "android_channel_id": "2"
             },
-            "data": {
-                "click_action": "FLUTTER_NOTIFICATION_CLICK",
-                "status": "done",
-                "body": 'body',
-                "title": "title"
-            },
+            "data": details,
             "priority": "high",
-            'details': details
         }
 
         notfiy.delay(fcm_url, payload, headers)

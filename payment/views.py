@@ -24,7 +24,7 @@ class PaymentView(APIView):
         payment = self.save_transaction(request, user)
 
         if success:
-            amount = request.data['obj']['data']['amount']
+            amount = request.data['obj']['data']['amount'] / 100
             user.refund_credits(int(amount))
             user.send_notification(f'تم إضافة {amount} جنية لحسابكم.', details=payment) 
             return Response(payment, status=status.HTTP_200_OK)
