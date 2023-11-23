@@ -33,7 +33,7 @@ GENDER_CHOICES = [
         ]
 
 class User(AbstractBaseUser):
-    email= models.EmailField(max_length=255, unique=True, blank=True, null=True)
+    email= models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
     username = models.CharField(max_length=11, unique=True)
     gender =models.CharField(max_length=20, choices=GENDER_CHOICES)

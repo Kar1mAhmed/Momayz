@@ -24,9 +24,10 @@ class UserRegisterSerializer(UserDetailsSerializer):
             name=self.validated_data['name'],
             gender = self.validated_data['gender'],
             notification_token = self.validated_data['notification_token'], 
-            city = self.validated_data['city']           
+            city = self.validated_data['city'],
+            email = self.validated_data['email']
         )
-        optional_fields = ['with_facebook', 'with_google', 'email', 'img']
+        optional_fields = ['with_facebook', 'with_google','img']
     
         for field in optional_fields:
             if field in self.validated_data:
