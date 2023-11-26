@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 
 import base64
 import json
+from asgiref.sync import async_to_sync
 
 
 from channels.layers import get_channel_layer
@@ -11,10 +12,10 @@ from channels.layers import get_channel_layer
 
 def send_message_to_admin(data):
     channel_layer = get_channel_layer()
-    channel_layer.group_send(
-        'admin_chat',   
+    async_to_sync(channel_layer.group_send)(
+        'chat_admin',
         {
-            'type': 'forward_to_admin',
+            'type': 'forward_to_all',
             'message': data
         }
     ) 

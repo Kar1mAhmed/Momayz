@@ -17,3 +17,10 @@ def get_chat(request):
     return Response(serialized_data.data, status=status.HTTP_200_OK)
 
 
+
+@api_view(['GET'])
+def chat_list(request):
+    serialized_data = MessageSerializer(messages, many=True)
+    return Response(serialized_data.data, status=status.HTTP_200_OK)
+
+

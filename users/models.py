@@ -64,6 +64,7 @@ class User(AbstractBaseUser):
 
     def has_module_perms(self, app_label):
         return True
+    
 
     def remove_notification_token(self):
         self.notification_token = None
