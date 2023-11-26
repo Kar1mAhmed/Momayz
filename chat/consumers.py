@@ -10,6 +10,9 @@ from .helpers import send_message_to_admin
 from .models import Chat
 from users.models import User
 
+from django.utils import timezone
+
+
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
         # self.user = get_user_from_token(self.scope["url_route"]["kwargs"]["token"])
@@ -41,6 +44,15 @@ class ChatConsumer(WebsocketConsumer):
         if text_data_json.get("seen_by"):
             message['seen_by'] = text_data_json.get("seen_by")
             message['chat_id'] = Chat.objects.get(user=self.user).pk
+            
+            if message['seen_by'] == 'admin':
+                chat = Chat.objects.get(user=self.user)
+                chat.admin_last_seen = timezone.now()
+                chat.save()
+            else:
+                chat = Chat.objects.get(user=self.user)
+                chat.user_last_seen = timezone.now()
+                chat.save()
         
         # if sent data is message
         else:
