@@ -15,7 +15,7 @@ from otp.models import OTP
 class UserDetails(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
     queryset = User.objects.all()
-    serializer_class = UserRegisterSerializer
+    serializer_class = CustomUserDetailsSerializer
 
 
 class CustomLogoutView(LogoutView):
