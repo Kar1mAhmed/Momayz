@@ -3,8 +3,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 
-from .models import Message
-from .serializers import MessageSerializer
+from .models import Message, Chat
+from .serializers import MessageSerializer, ChatSerializer
 
 
 
@@ -20,7 +20,11 @@ def get_chat(request):
 
 @api_view(['GET'])
 def chat_list(request):
-    serialized_data = MessageSerializer(messages, many=True)
-    return Response(serialized_data.data, status=status.HTTP_200_OK)
+    chats = Chat.objects.all()
 
+    # Exclude chats without a last message
+    chats_with_last_message = [chat for chat in chats if Message.objects.filter(chat=chat).exists()]
+
+    serialized_data = ChatSerializer(chats_with_last_message, many=True)
+    return Response(serialized_data.data, status=status.HTTP_200_OK)
 

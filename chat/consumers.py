@@ -72,19 +72,17 @@ class ChatConsumer(WebsocketConsumer):
         voice = text_data_json.get('voice')
         sent_by_admin = text_data_json.get('sent_by_admin')
         
-        if not sent_by_admin:
-            sent_by_admin = True if self.user.is_staff or self.user.is_superuser else False
         
         if not text and not voice and not image:
             return False
         
-        chat = Chat.objects.get(user=self.user)
+        chat_instance, created = Chat.objects.get_or_create(user=self.user)
         message = Message.objects.create(
                                         text=text,
                                         image=image,
                                         voice=voice,
                                         sent_by_admin=sent_by_admin,
-                                        chat=chat)
+                                        chat=chat_instance)
         
         return MessageSerializer(message).data
     

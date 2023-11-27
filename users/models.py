@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from locations.models import Area
-
 from project.celery import notfiy
 
 class MyUserManager(BaseUserManager):
