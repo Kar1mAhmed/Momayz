@@ -76,7 +76,7 @@ class ChatConsumer(WebsocketConsumer):
         if not text and not voice and not image:
             return False
         
-        chat_instance, created = Chat.objects.get_or_create(user=self.user)
+        chat_instance, created = Chat.objects.get(user=self.user)
         message = Message.objects.create(
                                         text=text,
                                         image=image,

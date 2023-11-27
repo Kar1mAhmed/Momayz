@@ -12,7 +12,7 @@ from .serializers import MessageSerializer, ChatSerializer
 @permission_classes([IsAuthenticated])  
 def get_chat(request):
     user = request.user
-    chat = Chat.objects.get(user=user)
+    chat = Chat.objects.get_or_create(user=user)
     messages = Message.objects.filter(chat=chat)
     serialized_data = MessageSerializer(messages, many=True)
     return Response(serialized_data.data, status=status.HTTP_200_OK)
@@ -28,4 +28,3 @@ def chat_list(request):
 
     serialized_data = ChatSerializer(chats_with_last_message, many=True)
     return Response(serialized_data.data, status=status.HTTP_200_OK)
-
