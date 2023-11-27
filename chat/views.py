@@ -12,7 +12,8 @@ from .serializers import MessageSerializer, ChatSerializer
 @permission_classes([IsAuthenticated])  
 def get_chat(request):
     user = request.user
-    messages = Message.objects.filter(user=user)
+    chat = Chat.objects.get(user=user)
+    messages = Message.objects.filter(chat=chat)
     serialized_data = MessageSerializer(messages, many=True)
     return Response(serialized_data.data, status=status.HTTP_200_OK)
 
