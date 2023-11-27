@@ -4,35 +4,19 @@ import pytz
 
 from .models import Flight, Program
 
-
-def create_new_flights_for_all_programs(date):
-    programs = Program.objects.all()
-    for program in programs:
-        create_flight(program, date)
-
-
-def create_flight(program):
-    cairo_timezone = pytz.timezone('Africa/Cairo')
-    today_date = timezone.now().astimezone(cairo_timezone).date()
+def create_program(program, date):
+    date = datetime.strptime(date, '%Y-%m-%d')
+    day_name = date.strftime('%A')
     
-    for day in range(31):
-        date = today_date + timedelta(days=day)
-        day_name = date.strftime('%A')
-        for appointment in program.move_at.all():
-            if appointment.day.name == day_name:
-                try:
-                    Flight.objects.get(program=program, date=date, time=appointment.time)
-                except:
-                    new_flight = Flight.objects.create(program=program, date=date, time=appointment.time)
-                    new_flight.save()
+    appointments = program.move_at.filter(day__name=day_name)
+    for appoint in appointments:
+        Flight.objects.get_or_create(program=program, date=date, time=appoint.time)
 
-def create_flights_all_programs():
+
+def create_all_programs(date):
     programs = Program.objects.all()
-
-    for program in programs:
-        create_flight(program=program)
-
-
+    for prog in programs:
+        create_program(prog, date)
 
 def delete_old_flights(passed_days=1):
     cairo_timezone = pytz.timezone('Africa/Cairo')
