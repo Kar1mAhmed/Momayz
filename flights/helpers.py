@@ -5,7 +5,7 @@ import pytz
 from .models import Flight, Program
 
 def create_program(program, date):
-    date = datetime.strptime(date, '%Y-%m-%d')
+    date = datetime.strptime(str(date), '%Y-%m-%d')
     day_name = date.strftime('%A')
     
     appointments = program.move_at.filter(day__name=day_name)
@@ -17,6 +17,13 @@ def create_all_programs(date):
     programs = Program.objects.all()
     for prog in programs:
         create_program(prog, date)
+        
+def create_all_next_30():
+    date = timezone.now().date()
+    
+    for i in range(30):
+        cur_date = date + timedelta(days=i)
+        create_all_programs(cur_date)
 
 def delete_old_flights(passed_days=1):
     cairo_timezone = pytz.timezone('Africa/Cairo')

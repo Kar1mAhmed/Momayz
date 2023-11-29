@@ -22,7 +22,7 @@ def midnight(self, reservation_days=30, flights_days=30):
     today_date = timezone.now().astimezone(cairo_timezone).date()
     date_after_30 = today_date + timedelta(days=30)
     
-    create_all_programs(str(date_after_30))
+    create_all_programs(date_after_30)
 
 
 
