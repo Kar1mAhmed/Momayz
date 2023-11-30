@@ -50,6 +50,7 @@ class Flight(models.Model):
 
 
     def increment_taken_seats(self):
+        Flight.objects.select_for_update().get(pk=self.pk)
         if self.taken_seats < self.total_seats:
             self.taken_seats += 1
             self.save()

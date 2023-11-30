@@ -83,7 +83,9 @@ class Reservation(models.Model):
             raise str(e)
         
     def _get_seat_number(self, flight, gender): 
-        
+        '''
+        this is the most safe way to get seat number by spreading man's from women'
+        '''
 
         flight_instance = Flight.objects.select_for_update().get(pk=flight.pk)
         if flight.taken_seats >= flight.total_seats:
