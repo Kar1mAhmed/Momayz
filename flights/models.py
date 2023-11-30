@@ -32,7 +32,6 @@ class Flight(models.Model):
     time = models.TimeField(default="00:00:00")
     taken_seats = models.SmallIntegerField(default=0, validators=[MinValueValidator(0)])
     total_seats = models.SmallIntegerField(default=0, validators=[MinValueValidator(0)])
-    canceled  = models.BooleanField(default=False)
     notified = models.BooleanField(default=False)
     
     class Meta:

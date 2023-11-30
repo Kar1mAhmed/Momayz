@@ -24,15 +24,12 @@ def today_flights(request):
     
     cairo_timezone = pytz.timezone('Africa/Cairo')
     current_date = timezone.now().astimezone(cairo_timezone).date()
-    #current_time = timezone.now().time()
     
     
     flights = Flight.objects.filter(
     Q(program__move_from=city) | Q(program__move_to=city), 
-    canceled=False,
     taken_seats__lt=models.F('total_seats'),
     date=current_date
-    #time__gt=current_time
     )
 
     data_serialized = FlightSerializer(flights, many=True)
@@ -52,7 +49,6 @@ def tomorrow_flights(request):
 
     flights = Flight.objects.filter(
     Q(program__move_from=city) | Q(program__move_to=city), 
-    canceled=False,
     taken_seats__lt=models.F('total_seats'),
     date=current_date,
     )
@@ -72,7 +68,6 @@ def flights_by_date(request):
     flights = Flight.objects.filter(
     program__move_from__name=move_from,
     program__move_to__name=move_to, 
-    canceled=False,
     taken_seats__lt=models.F('total_seats'),
     date=date,
     )
