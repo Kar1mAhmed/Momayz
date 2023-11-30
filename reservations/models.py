@@ -83,27 +83,29 @@ class Reservation(models.Model):
             raise str(e)
         
     def _get_seat_number(self, flight, gender): 
-        with transaction.atomic():
-            if flight.taken_seats >= flight.total_seats:
+        
+
+        flight_instance = Flight.objects.select_for_update().get(pk=flight.pk)
+        if flight.taken_seats >= flight.total_seats:
                 return None
-            
-            reserved_seat_numbers = set(Reservation.objects.filter(flight=flight) \
+
+        reserved_seat_numbers = set(Reservation.objects.filter(flight=flight) \
                                         .values_list('seat_number', flat=True))
             
             # separate males from females
-            if gender == 'Female': 
-                start = 1
-                end = flight.total_seats + 1
-                move = 1
-            else:
-                start = flight.total_seats 
-                end = 0
-                move = -1
+        if gender == 'Female': 
+            start = 1
+            end = flight.total_seats + 1
+            move = 1
+        else:
+            start = flight.total_seats 
+            end = 0
+            move = -1
                 
-            for seat_number in range(start, end, move):
-                    if seat_number not in reserved_seat_numbers:
-                        return seat_number
-            return None
+        for seat_number in range(start, end, move):
+                if seat_number not in reserved_seat_numbers:
+                    return seat_number
+        return None
         
         
     def _handel_credits(self):
