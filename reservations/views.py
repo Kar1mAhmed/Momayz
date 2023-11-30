@@ -118,8 +118,9 @@ class PackageView(APIView):
         date_from_30days = today - timezone.timedelta(days=30)
         
         reservations_30day = Reservation.objects.filter(user=user, flight__date__gte=date_from_30days).order_by('-flight__date')
-        total_price = reservations_30day.aggregate(Sum('flight__program__price'))['flight__program__price__sum']
-        greatest_reservation_date = reservations_30day.first().flight.date
+        total_price = reservations_30day.aggregate(Sum('flight__program__price'))['flight__program__price__sum'] or 0
+        greatest_reservation_date = reservations_30day.first().flight.date if reservations_30day.exists() else ''
+
 
         # !!! UNFINISHED
         return{"package_name": "اشتراك يومي",
