@@ -19,7 +19,7 @@ SECRET_KEY = 'django-insecure-1rcgs+lmoj0ox!#g^5rf9--aw)i&7%i#wtf+nvt&pa(96i9f)&
 TIME_ZONE = 'Africa/Cairo'
 USE_TZ = False
 
-DEBUG = True
+DEBUG = False
 
 
 AUTH_USER_MODEL = 'users.User'
