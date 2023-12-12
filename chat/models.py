@@ -22,4 +22,4 @@ class Message(models.Model):
     def __str__(self) -> str:
         text = self.text if self.text is not None else "-Link-"
         sent_by = 'admin' if self.sent_by_admin else 'user'
-        return f"({self.user.username})-:{sent_by}--> {text}"
+        return f"({self.chat.user.username})-:{sent_by}--> {text}"
