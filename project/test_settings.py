@@ -7,7 +7,6 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 ALLOWED_HOSTS = ['*']
-CSRF_TRUSTED_ORIGINS = ['http://*', 'https://*']
 CSRF_TRUSTED_ORIGINS = ['http://*', 'https://*', 'https://*.momyez.up.railway.app/']
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -18,9 +17,9 @@ SECRET_KEY = 'django-insecure-1rcgs+lmoj0ox!#g^5rf9--aw)i&7%i#wtf+nvt&pa(96i9f)&
 
 
 TIME_ZONE = 'Africa/Cairo'
-#USE_TZ = True
+USE_TZ = False
 
-DEBUG = True
+DEBUG = False
 
 
 AUTH_USER_MODEL = 'users.User'
@@ -29,6 +28,13 @@ AUTH_USER_MODEL = 'users.User'
 # Application definition
 
 INSTALLED_APPS = [
+    
+    'daphne',
+    'channels',  
+    'celery',
+    'django_celery_results',
+    'django_celery_beat',
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -46,7 +52,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
 
-    
+    'settings',
     'users',
     'locations',
     'otp',
@@ -54,6 +60,7 @@ INSTALLED_APPS = [
     'flightsInfo',
     'reservations',
     'chat',
+    'payment'
 ]
 SITE_ID = 1
 
@@ -89,6 +96,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'project.wsgi.application'
+ASGI_APPLICATION = "project.asgi.application"
 
 
 # Database
@@ -101,15 +109,34 @@ DATABASES = {
         # 'ENGINE': 'django.db.backends.postgresql',
         # 'NAME': 'railway',
         # 'USER': 'postgres',
-        # 'PASSWORD': 'YxRprv0nVZZ8ITSFdQNf',
-        # 'HOST': 'containers-us-west-42.railway.app',
-        # 'PORT': '6861',
+        # 'PASSWORD': 'B14C5EG3acFc341DD3211c61CcA2CCD1',
+        # 'HOST': 'roundhouse.proxy.rlwy.net',
+        # 'PORT': '48970',
     },
-    
+}
+
+REDIS_URL = 'redis://default:BMkhFaiH65F21kAIfooMnEKKkEngnJfK@viaduct.proxy.rlwy.net:22860'
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [os.environ.get('REDIS_URL', 'redis://default:BMkhFaiH65F21kAIfooMnEKKkEngnJfK@viaduct.proxy.rlwy.net:22860')],
+        },
+    },
 }
 
 
 
+CELERY_BROKER_URL = REDIS_URL
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_TIMEZONE = "Africa/Cairo"
+CELERY_ENABLE_UTC = False
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+# CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True 
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -160,6 +187,7 @@ ACCOUNT_CONFIRM_EMAIL_ON_GET = False
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 
+HMAC_KEY = '8BFDAE7FAC451F0EDC10C4DE660F69E5'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -168,8 +196,8 @@ REST_FRAMEWORK = {
 }
 SIMPLE_JWT  = {
     'USER_ID_FIELD': 'username',
-    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=500),
-    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=10),
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=3),
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(minutes=5),
     'ROTATE_REFRESH_TOKENS': True,
 }
 
