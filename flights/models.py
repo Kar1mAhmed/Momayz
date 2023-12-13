@@ -5,6 +5,7 @@ from flightsInfo.models import Appointments, Bus
 
 from django.core.validators import MinValueValidator
 
+from datetime import timedelta
 
 
 class Program(models.Model):
@@ -13,7 +14,7 @@ class Program(models.Model):
     move_to = models.ForeignKey(Area, on_delete=models.PROTECT, related_name="move_to")
     move_at = models.ManyToManyField(Appointments)
     bus = models.ForeignKey(Bus, on_delete=models.PROTECT)
-    duration = models.DurationField(default="00:00:00")
+    duration = models.DurationField(default=timedelta(minutes=30))
     price = models.DecimalField(max_digits=8, decimal_places=2)
     auto_create = models.BooleanField(default=True)
     
@@ -38,6 +39,8 @@ class Flight(models.Model):
         unique_together = ('time', 'program', 'date')
         ordering = ['date', 'time']
 
+    def __str__(self) -> str:
+        return f"{self.program.move_from} إلي {self.program.move_to} ({self.date} | {self.time})"
     
     def save(self, *args, **kwargs):
         if not self.pk:
@@ -64,9 +67,5 @@ class Flight(models.Model):
         else:
             raise ValueError("Seats reaching limits.")
 
-    class Meta:
-        ordering = ['date', 'time']
-
-        
-    def __str__(self) -> str:
-        return f"{self.program.move_from} إلي {self.program.move_to} ({self.date} | {self.time})"
+    def is_full(self):
+        return (self.taken_seats >= self.total_seats)

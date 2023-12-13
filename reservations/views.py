@@ -141,7 +141,7 @@ def edit_reservation(request):
     try:
         reservation_to_cancel = Reservation.objects.get(pk=reservation_to_cancel, user=user)
     except ObjectDoesNotExist:
-        return Response({'detail': 'Reservation not found.'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'detail': 'لم يتم العثور علي الحجز.'}, status=status.HTTP_400_BAD_REQUEST)
     
     cairo_timezone = pytz.timezone('Africa/Cairo')
     current_date_in_cairo = timezone.now().astimezone(cairo_timezone).date()
@@ -156,4 +156,4 @@ def edit_reservation(request):
                         'reservation': serialized_reservation.data}, status=status.HTTP_200_OK)
         
     except ValueError as _:
-        return Response({'detail': 'فشل الحجز برجاء المحاولة مرة أخرى.'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'detail': 'فشل التعديل برجاء المحاولة مرة أخرى.'}, status=status.HTTP_400_BAD_REQUEST)

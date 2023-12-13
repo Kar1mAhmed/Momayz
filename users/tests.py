@@ -4,7 +4,7 @@ from locations.models import Area, Govern
 
 
 # Create your tests here.
-class ReservationModelTestCase(TestCase):
+class UserModelTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create(email='test@example.com', name='Test User', username='testuser', gender='Male', credits=0)
 

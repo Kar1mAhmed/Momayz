@@ -84,7 +84,12 @@ class Reservation(models.Model):
         
     def _get_seat_number(self, flight, gender): 
         '''
-        this is the most safe way to get seat number by spreading man's from women'
+        this is the most safe way to get seat number by spreading man's from women's.
+        
+        reserved_seat_numbers should be listed because reservation could be cancelled
+        so some in middle seats could be empty, keeping track of all reserved seats
+        will be inefficient in terms of storage and will cause some critical section problems,
+        and listing the seats in every reservation will be overhead but it will be safer.
         '''
 
         flight_instance = Flight.objects.select_for_update().get(pk=flight.pk)
