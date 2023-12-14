@@ -1,16 +1,12 @@
 from django.test import TestCase
-from django.db import transaction
 
 from reservations.models import Reservation, Subscription
 from flights.models import Flight, Program
 from users.models import User
 from locations.models import Area, Govern
-from flightsInfo.models import Bus, Appointments, Package
+from flightsInfo.models import Bus, Appointments, Package, Day
 
-from flights.helpers import get_next_30_dates, create_flight
-
-from django.utils import timezone
-import pytz
+from flights.helpers import create_all_next_30
 
 
 
@@ -29,42 +25,39 @@ class ReservationPackageTestCase(TestCase):
                                         city=self.move_from_area)
 
         self.bus = Bus.objects.create(name='Test Bus', seats=10)
+        
+        
+        self.day1 = Day.objects.create(name='Monday')
+        self.day2 = Day.objects.create(name='Friday')
 
-        self.appointment1 = Appointments.objects.create(time='12:00:00')
-        self.appointment2 = Appointments.objects.create(time='16:00:00')
+        self.appointment1 = Appointments.objects.create(time='12:00:00', day=self.day1)
+        self.appointment2 = Appointments.objects.create(time='16:00:00', day=self.day2)
 
 
         self.program1 = Program.objects.create(govern=self.govern, move_from=self.move_from_area,
-                                                move_to=self.move_to_area, bus=self.bus,
-                                                duration='2 hours', price=25)
+                                                move_to=self.move_to_area, bus=self.bus,price=25)
         
         self.program2 = Program.objects.create(govern=self.govern, move_from=self.move_to_area,
-                                                move_to=self.move_from_area, bus=self.bus,
-                                                duration='2 hours', price=25)
+                                                move_to=self.move_from_area, bus=self.bus,price=25)
         
         self.program1.move_at.add(self.appointment1)
         self.program2.move_at.add(self.appointment2)
         
-        self.package = Package.objects.create(price=300, num_of_flights=10, name="Test package")
+        self.package = Package.objects.create(price=300, num_of_flights=10, name="Test package", city=self.move_from_area)
         
-        self._add_flight_for_next_month(self.program1.pk)
-        self._add_flight_for_next_month(self.program2.pk)
+        create_all_next_30()
 
 
 
     def test_book_package(self):
-        self.user.credits = 300
         self.user.save()
         
         package = Package.objects.get(pk=1)
+        self.user.credits = package.price
         flights = Flight.objects.all()[:8]
         
     
-        with transaction.atomic():
-            subscription = Subscription.objects.create(user=self.user, package=package)
-            for flight in flights:
-                Reservation.objects.create(user=self.user, flight=flight, subscription=subscription)
-            self.user.deduct_credits(package.price)
+        subscription, _ = Subscription.objects.custom_create(user=self.user, package=package, flights=flights)
 
         self.user.refresh_from_db()
         
@@ -80,9 +73,6 @@ class ReservationPackageTestCase(TestCase):
         #Creating new instance of flights 
         Flight.objects.all().delete()
         Reservation.objects.all().delete()
-        self._add_flight_for_next_month(self.program1.pk)
-        self._add_flight_for_next_month(self.program2.pk)
-
         
         self.user.credits = 100
         self.user.save()
@@ -90,12 +80,8 @@ class ReservationPackageTestCase(TestCase):
         package = Package.objects.get(pk=1)
         flights = Flight.objects.all()[:8]
         
-        with self.assertRaises(ValueError):
-            subscription = Subscription.objects.create(user=self.user, package=package)
-            with transaction.atomic():
-                self.user.deduct_credits(package.price)                
-                for flight in flights:
-                    Reservation.objects.create(user=self.user, flight=flight, subscription=subscription)
+        subscription, _ = Subscription.objects.custom_create(user=self.user, package=package, flights=flights)
+
         
         self.assertEqual(self.user.credits, 100)        
         self.assertEqual(Reservation.objects.all().count(), 0)
@@ -110,10 +96,8 @@ class ReservationPackageTestCase(TestCase):
         #Creating new instance of flights 
         Flight.objects.all().delete()
         Reservation.objects.all().delete()
-        self._add_flight_for_next_month(self.program1.pk)
-        self._add_flight_for_next_month(self.program2.pk)
 
-        
+        create_all_next_30()
         self.user.credits = 300
         self.user.save()
         
@@ -125,24 +109,7 @@ class ReservationPackageTestCase(TestCase):
         full_flight.taken_seats = full_flight.total_seats
         full_flight.save()
         
-        with self.assertRaises(ValueError):
-            subscription = Subscription.objects.create(user=self.user, package=package)
-            with transaction.atomic():
-                    for flight in flights:
-                        Reservation.objects.create(user=self.user, flight=flight, subscription=subscription)
+        subscription, _ = Subscription.objects.custom_create(user=self.user, package=package, flights=flights)
+
 
         self.assertEqual(Reservation.objects.all().count(), 0)
-
-    def _add_flight_for_next_month(self, program_id):
-    
-        program = Program.objects.get(pk=program_id)
-        cairo_timezone = pytz.timezone('Africa/Cairo')
-        today_date = timezone.now().astimezone(cairo_timezone).date()
-        dates = get_next_30_dates(str(today_date))
-        
-        for date in dates:
-            flights = Flight.objects.filter(program=program, date=date)
-            if not flights.exists():
-                create_flight(program=program, date=date)
-                
-        return True

@@ -3,7 +3,7 @@ from reservations.models import Reservation
 from flights.models import Flight, Program
 from users.models import User
 from locations.models import Area, Govern
-from flightsInfo.models import Bus, Appointments
+from flightsInfo.models import Bus, Appointments, Day
 
 
 class ReservationModelTestCase(TestCase):
@@ -16,11 +16,11 @@ class ReservationModelTestCase(TestCase):
 
         self.bus = Bus.objects.create(name='Test Bus', seats=10)
 
-        self.appointment = Appointments.objects.create(time='12:00:00')
+        self.day1 = Day.objects.create(name='Monday')
+        self.appointment = Appointments.objects.create(time='12:00:00', day=self.day1)
 
         self.program1 = Program.objects.create(govern=self.govern, move_from=self.move_from_area,
-                                                move_to=self.move_to_area, bus=self.bus,
-                                                duration='2 hours', price=50)
+                                                move_to=self.move_to_area, bus=self.bus, price=50)
         
         self.program1.move_at.add(self.appointment)
         self.flight = Flight.objects.create(program=self.program1, date='2023-10-20')
@@ -131,8 +131,7 @@ class ReservationModelTestCase(TestCase):
     def test_replace_diff_destinations(self):
         
         program2 = Program.objects.create(govern=self.govern, move_from=self.move_from_area,
-                                                move_to=self.move_from_area, bus=self.bus,
-                                                duration='2 hours', price=150)
+                                                move_to=self.move_from_area, bus=self.bus,price=150)
         program2.move_at.add(self.appointment)
         
         flight1 = Flight.objects.create(program=self.program1, date='2023-10-30')
@@ -184,8 +183,7 @@ class ReservationModelTestCase(TestCase):
 
     def test_check_seat_number(self):
         program_local = Program.objects.create(govern=self.govern, move_from=self.move_from_area,
-                                                move_to=self.move_from_area, bus=self.bus,
-                                                duration='2 hours', price=50)
+                                                move_to=self.move_from_area, bus=self.bus,price=50)
         program_local.move_at.add(self.appointment)
         flight = Flight.objects.create(program=program_local, date='2023-10-11')
         
