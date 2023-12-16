@@ -10,7 +10,7 @@ from flights.helpers import create_all_next_30
 
 
 
-class ReservationPackageTestCase(TestCase):
+class SubscriptionTestCase(TestCase):
     def setUp(self):
         self.govern = Govern.objects.create(name='Test Govern')
 
