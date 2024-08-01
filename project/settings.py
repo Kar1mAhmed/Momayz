@@ -107,11 +107,11 @@ DATABASES = {
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': BASE_DIR / 'db.sqlite3',
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'railway',
-        'USER': 'postgres',
+        'NAME': 'anaMomayz',
+        'USER': 'Hmos',
         'PASSWORD': 'B14C5EG3acFc341DD3211c61CcA2CCD1',
-        'HOST': 'roundhouse.proxy.rlwy.net',
-        'PORT': '48970',
+        'HOST': 'momayz-test.cnm888kcg969.eu-central-1.rds.amazonaws.com',
+        'PORT': '5432',
     },
 }
 
