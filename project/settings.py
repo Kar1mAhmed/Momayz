@@ -115,13 +115,13 @@ DATABASES = {
     },
 }
 
-REDIS_URL = 'redis://default:BMkhFaiH65F21kAIfooMnEKKkEngnJfK@viaduct.proxy.rlwy.net:22860'
+REDIS_URL = 'master.momayzredistest.3l17qh.euc1.cache.amazonaws.com:6379'
 
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [os.environ.get('REDIS_URL', 'redis://default:BMkhFaiH65F21kAIfooMnEKKkEngnJfK@viaduct.proxy.rlwy.net:22860')],
+            "hosts": [os.environ.get('REDIS_URL', 'master.momayzredistest.3l17qh.euc1.cache.amazonaws.com:6379')],
         },
     },
 }
