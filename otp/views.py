@@ -8,37 +8,37 @@ from .helpers import *
 
 @api_view(['POST'])
 def generate_otp(request):
-    phone_number = request.data['phone_number']
+    # phone_number = request.data['phone_number']
+    email = request.data['email']
     reset = request.data.get('reset')
     
-    if check_phone_exist(phone_number) and reset != True:
-        return Response({'detail': 'الرقم مستخدم بالفعل.'}, status=status.HTTP_409_CONFLICT)
+    if check_email_exist(email) and reset != True:
+        return Response({'detail': 'الرقم مستخدم بالفعل.'}, status=status.HTTP_400_BAD_REQUEST)
     
-    if reset == True and not check_phone_exist(phone_number):
+    if reset == True and not check_email_exist(email):
         return Response({"detail": "User doesn't exist"}, status=status.HTTP_400_BAD_REQUEST)
 
     
-    if not is_egyptian_number(phone_number):
-        return Response({"detail": "Wrong phone number."}, status=status.HTTP_400_BAD_REQUEST)
+    # if not is_egyptian_number(phone_number):
+    #     return Response({"detail": "Wrong phone number."}, status=status.HTTP_400_BAD_REQUEST)
     
-    spam, message = check_spam(phone_number)
+    # spam, message = check_spam(email)
 
-    if spam:
-        return Response({"detail": message}, status=status.HTTP_403_FORBIDDEN)
+    # if spam:
+    #     return Response({"detail": message}, status=status.HTTP_403_FORBIDDEN)
+    send = send_otp(email)
+    if send:
+        return Response({"detail": "OTP sent successfully"}, status=status.HTTP_201_CREATED)
     else:
-        send = send_otp(phone_number)
-        if send:
-            return Response({"detail": "OTP sent successfully"}, status=status.HTTP_201_CREATED)
-        else:
-            return Response({"detail": "OTP send failed."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"detail": "OTP send failed."}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
 def verify_otp(request):
-    phone_number = request.data["phone_number"]
+    email = request.data["email"]
     otp_code = request.data["code"]
         
-    otps = OTP.objects.filter(phone_number=phone_number).order_by('-created_at')
+    otps = OTP.objects.filter(email=email).order_by('-created_at')
     last_otp = otps.first()
 
     if not last_otp:
@@ -48,7 +48,7 @@ def verify_otp(request):
         if last_otp.is_expired():  
             return Response({'detail': "OTP expired."}, status.HTTP_400_BAD_REQUEST)
         else:
-            otps = OTP.objects.filter(phone_number=phone_number).exclude(id=last_otp.id)
+            otps = OTP.objects.filter(email=email).exclude(id=last_otp.id)
             otps.exclude(id=last_otp.id)
             return Response({'detail': "Verified."}, status=status.HTTP_200_OK)
     else:

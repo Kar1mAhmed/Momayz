@@ -3,7 +3,8 @@ from django.utils import timezone
 
 
 class OTP(models.Model):
-    phone_number = models.CharField(max_length=11)
+    phone_number = models.CharField(max_length=11, null=True, blank=True)
+    email = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     code = models.CharField(max_length=6)
     

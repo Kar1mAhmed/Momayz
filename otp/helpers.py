@@ -6,6 +6,8 @@ from datetime import timedelta
 import datetime
 from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.mail import send_mail
+
 
 import re
 import random
@@ -34,33 +36,51 @@ def delete_old_otps(passed_days=1):
     OTP.objects.filter(created_at__lt=deletion_date).delete()
     
     
-def check_spam(phone_number):
+# def check_spam(email):
     
-    otps_of_number = OTP.objects.filter(phone_number=phone_number)
-    now = datetime.datetime.now()
+#     otps_of_number = OTP.objects.filter(email=email)
+#     now = datetime.datetime.now()
     
-    if otps_of_number.count() >= OTP_LIMIT_FOR_NUMBER:
-        return True, "Phone number exceeded all OTPS limit."
-    if otps_of_number.filter(created_at__date=now.date()).count() >= OTP_LIMIT_FOR_NUMBER_PER_DAY:
-        return True, "Phone number exceeded today OTPS limit, try agin tomorrow. "
-    if otps_of_number.filter(created_at__hour=now.hour, created_at__date = now.date()).count() >= OTP_LIMIT_FOR_NUMBER_PER_HOUR:
-        return True, "Phone number exceeded This Hour OTPS limit, try agin after one hour."
-    else:
-        return False, None
+#     if otps_of_number.count() >= OTP_LIMIT_FOR_NUMBER:
+#         return True, "Phone number exceeded all OTPS limit."
+#     if otps_of_number.filter(created_at__date=now.date()).count() >= OTP_LIMIT_FOR_NUMBER_PER_DAY:
+#         return True, "Phone number exceeded today OTPS limit, try agin tomorrow. "
+#     if otps_of_number.filter(created_at__hour=now.hour, created_at__date = now.date()).count() >= OTP_LIMIT_FOR_NUMBER_PER_HOUR:
+#         return True, "Phone number exceeded This Hour OTPS limit, try agin after one hour."
+#     else:
+#         return False, None
     
-def send_otp(phone):
+def send_otp(email):
+    print('Sending otp phase started')
     otp_code = ''.join([str(random.randint(0, 9)) for _ in range(6)])
-    otp_code = '555555' # should be removed
     #send_otp_to_number(otp, phone)
-    otp = OTP.objects.create(code=otp_code, phone_number=phone)
-    otp.save()
-    return True
+    try: 
+        send_otp_to_email(email, otp_code)
+        otp = OTP.objects.create(code=otp_code, email=email)
+        otp.save()
+        return True
+    except Exception as e:
+        print(e)
+        return False
 
 
+def send_otp_to_email(email, otp):
+    subject = 'Email verification'
+    message = f'This is Your OTP for Momayz app: {otp}'
+    from_email = 'basketserviceteam@gmail.com'
+    recipient_list = [f'{email}']
+    print(recipient_list)
+    send_mail(
+        subject,
+        message,
+        from_email,
+        recipient_list,
+        fail_silently=False,
+    )
     
-def check_phone_exist(phone_number):
+def check_email_exist(email):
     try:
-        user = User.objects.get(username=phone_number)
+        user = User.objects.get(email=email)
         return True
     except ObjectDoesNotExist:
         return False
