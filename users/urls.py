@@ -8,5 +8,6 @@ urlpatterns = [
     path('login/', CustomLoginView.as_view()),
     path('', include('dj_rest_auth.urls')),
     path('registration/', include('dj_rest_auth.registration.urls')),
-    path('rest-password/', reset_password)
+    path('rest-password/', reset_password),
+    path('delete-account2/', delete_account),
 ]

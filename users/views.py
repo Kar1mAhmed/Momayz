@@ -84,3 +84,14 @@ def get_otp_status(phone_number, otp):
     if last_otp.is_expired():
         return "OTP expired."
     return "good"
+
+
+@api_view(['DELETE'])
+def delete_account(request):
+    id = request.data['id']
+    try:
+        user = User.objects.get(id=id)
+        user.delete()
+        return Response({'detail': "Account deleted successfully."}, status=status.HTTP_200_OK)
+    except:
+        return Response({'detail': "No user with this id."}, status=status.HTTP_404_NOT_FOUND)
