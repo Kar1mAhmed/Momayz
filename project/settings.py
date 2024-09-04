@@ -1,7 +1,9 @@
 from pathlib import Path
 import datetime
 import os
+from dotenv import load_dotenv
 
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -107,21 +109,20 @@ DATABASES = {
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': BASE_DIR / 'db.sqlite3',
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'anaMomayz',
-        'USER': 'Hmos',
-        'PASSWORD': 'B14C5EG3acFc341DD3211c61CcA2CCD1',
-        'HOST': 'momayz-test.cnm888kcg969.eu-central-1.rds.amazonaws.com',
-        'PORT': '5432',
+        'NAME': os.getenv('PGDATABASE'),
+        'USER': os.getenv('PGUSER'),
+        'PASSWORD': os.getenv('PGPASSWORD'),
+        'HOST': os.getenv('PGHOST'),
+        'PORT': os.getenv('PGPORT'),
     },
 }
 
-REDIS_URL = 'master.momayzredistest.3l17qh.euc1.cache.amazonaws.com:6379'
 
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [os.environ.get('REDIS_URL', 'master.momayzredistest.3l17qh.euc1.cache.amazonaws.com:6379')],
+            "hosts": [os.getenv('REDIS_URL')],
         },
     },
 }
@@ -136,7 +137,7 @@ EMAIL_HOST_PASSWORD = 'pvwwmvluuvsvjiwc'
 EMAIL_PORT = 587
 
 
-CELERY_BROKER_URL = REDIS_URL
+CELERY_BROKER_URL = os.env('REDIS_URL')
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_TIMEZONE = "Africa/Cairo"
 CELERY_ENABLE_UTC = False
