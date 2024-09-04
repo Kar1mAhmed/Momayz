@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from locations.models import Area
 from project.celery import notfiy
+import requests
 
 class MyUserManager(BaseUserManager):
     def create_user(self, username, password=None):
@@ -104,5 +105,6 @@ class User(AbstractBaseUser):
             "data": details,
             "priority": "high",
         }
-
-        notfiy.delay(fcm_url, payload, headers)
+        response = requests.post(fcm_url, json=payload, headers=headers)
+        print(response)
+        # notfiy.delay(fcm_url, payload, headers)
